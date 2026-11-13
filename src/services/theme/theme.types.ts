@@ -1,3 +1,5 @@
+import type { SuccessDataAny } from '@kk-garden/shared/errors';
+
 export const themeColorNames = [
   '--background',
   '--foreground',
@@ -35,3 +37,6 @@ export type ThemeColorPalette = {
   light: ThemeColorMap;
   dark: ThemeColorMap;
 };
+
+export type ThemePaletteResult = SuccessDataAny<ThemeColorPalette>;
+export type ThemeApplyResult = SuccessDataAny<{ applied: true }>;

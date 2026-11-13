@@ -1,17 +1,32 @@
 import { createAccentThemePalette } from './theme.utils';
-import type { ThemeColorMap, ThemeColorPalette } from './theme.types';
+import { handleError } from '@kk-garden/shared/errors';
+import type { ThemeApplyResult, ThemeColorMap, ThemePaletteResult } from './theme.types';
 
 export class ThemeService {
   private static readonly themeStyleElementId: string = 'kk-garden-accent-theme';
 
-  public setAccentColor(accentHex: string): void {
-    const palette: ThemeColorPalette = createAccentThemePalette(accentHex);
-    const styleElement: HTMLStyleElement = this.getThemeStyleElement();
+  public setAccentColor(accentHex: string): ThemeApplyResult {
+    try {
+      const paletteResult: ThemePaletteResult = createAccentThemePalette(accentHex);
 
-    styleElement.textContent = [
-      this.formatThemeRule(':root', palette.light),
-      this.formatThemeRule('.dark', palette.dark),
-    ].join('\n\n');
+      if (!paletteResult.success) {
+        throw new Error(paletteResult.errors[0]?.message ?? 'Accent palette generation failed.');
+      }
+
+      if (paletteResult.data === undefined) {
+        throw new Error('Accent palette generation returned no data.');
+      }
+
+      const styleElement: HTMLStyleElement = this.getThemeStyleElement();
+      styleElement.textContent = [
+        this.formatThemeRule(':root', paletteResult.data.light),
+        this.formatThemeRule('.dark', paletteResult.data.dark),
+      ].join('\n\n');
+
+      return { success: true, data: { applied: true } };
+    } catch (error: unknown) {
+      return handleError(error);
+    }
   }
 
   private formatThemeRule(selector: ':root' | '.dark', colors: ThemeColorMap): string {

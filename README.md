@@ -6,8 +6,14 @@ while leaving business rules, validation, authorization, and derived state to
 the backend.
 
 The client is currently an early scaffold: the home page is a placeholder and
-the application is not yet connected to the API. Starting the client alone
-does not start the backend or provide working garden features.
+garden features are not yet connected to the API. Its stateless auth service
+does call the backend's Better Auth endpoints. Starting the client alone does
+not start the backend or provide working garden features.
+
+Authentication supports email OTP, Google/GitHub, passkeys, and sign-out.
+Session checks for Server Components forward the incoming HTTP-only cookie to
+the backend and return a narrow, validated session shape; no session data is
+persisted in browser storage.
 
 UI and state foundations are installed: shadcn/ui uses the Base UI Nova preset
 with neutral CSS-variable theming, and Zustand, Zod, React Hook Form, and
@@ -24,8 +30,14 @@ client-side code with:
 ```ts
 import { getThemeService } from '@/services/theme/theme.container';
 
-getThemeService().setAccentColor('#321899');
+const themeResult = getThemeService().setAccentColor('#321899');
+if (!themeResult.success) {
+  console.error(themeResult.errors);
+}
 ```
+
+`setAccentColor` returns the shared `SuccessDataAny` result; check `success`
+before assuming the theme was applied.
 
 For now, the root layout passes the mock default accent `#321899` through
 `src/components/providers/AccentThemeProvider.tsx`. Profile preference
@@ -44,8 +56,8 @@ The project is split into independently managed packages:
   persistence. The local server listens on port `8090`; consult its setup
   instructions for required environment variables and MongoDB configuration.
 - `shared` — published `@kk-garden/shared` package containing shared schemas,
-  types, errors, assets, and utilities. The server currently uses it; client
-  integration is pending.
+  types, errors, assets, and utilities. Both the server and client consume it;
+  broader client contract integration will follow as features are added.
 
 ## Requirements
 
@@ -62,10 +74,20 @@ npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The current client
-scaffold does not consume environment variables. When API integration is
-added, the client convention is to read the backend URL from
-`NEXT_PUBLIC_API_BASE_URL` through centralized API configuration.
+Open [http://localhost:3000](http://localhost:3000). Client auth services read
+the backend origin from `NEXT_PUBLIC_API_BASE_URL` through the container-managed
+`EnvService` and `ApiService` (typically `http://localhost:8090` for local
+development). Next.js inlines this `NEXT_PUBLIC_*` value into the client build,
+so configure it before building and never put secrets in it.
+The `dev`, `build`, and `start` scripts validate the configured environment
+first; run `npm run env-validate` to validate it independently.
+Authentication uses Better Auth's HTTP-only session cookie; Server Components
+can read the current session from the backend without persisting session data
+in browser storage.
+For local browser authentication, the server's comma-separated
+`CLIENT_ORIGINS` must include the exact client origin `http://localhost:3000`.
+Origins such as `http://127.0.0.1:3000` are distinct; restart the server after
+changing the allowlist.
 
 To create and run a production build locally:
 
@@ -80,7 +102,10 @@ configuration requirements.
 ## Development commands
 
 ```sh
+npm run env-validate
+npm run check        # Run ESLint and TypeScript checks
 npm run lint          # Check ESLint rules
+npm run typescript    # Run the TypeScript check
 npm run format        # Format client files with Prettier
 npm run format:check  # Check formatting without changing files
 ```

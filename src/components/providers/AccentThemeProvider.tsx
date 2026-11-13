@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, type ReactElement, type ReactNode } from 'react';
+import { getLoggerService } from '@/services/logger/logger.container';
 import { getThemeService } from '@/services/theme/theme.container';
 
 type AccentThemeProviderProps = {
@@ -13,7 +14,11 @@ export const AccentThemeProvider = ({
   children,
 }: AccentThemeProviderProps): ReactElement => {
   useEffect((): void => {
-    getThemeService().setAccentColor(accentHex);
+    const result = getThemeService().setAccentColor(accentHex);
+
+    if (!result.success) {
+      getLoggerService().report('theme.setAccentColor', result);
+    }
   }, [accentHex]);
 
   return <>{children}</>;

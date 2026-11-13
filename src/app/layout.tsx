@@ -2,14 +2,22 @@ import type { Metadata } from 'next';
 import { AccentThemeProvider } from '@/components/providers/AccentThemeProvider';
 import './globals.css';
 
-const defaultAccentHex = '#321899' as const;
+const defaultAccentHex = '#5CFF7B' as const;
 
 export const metadata: Metadata = {
-  title: 'KK Garden',
-  description: 'A web application for managing and monitoring your garden, providing real-time data and insights',
+  title: '2k-garden',
+  description:
+    'A web application for managing and monitoring your unique digital space, providing real-time data and insights',
+  icons: {
+    icon: '/logo.svg',
+  },
 };
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+type RootLayoutProps = {
+  children: React.ReactNode;
+};
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="h-full antialiased">
       <body className="flex flex-col w-full m-0 p-0">

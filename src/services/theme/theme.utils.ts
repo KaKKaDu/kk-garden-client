@@ -1,4 +1,5 @@
-import type { ThemeColorMap, ThemeColorPalette } from './theme.types';
+import { handleError } from '@kk-garden/shared/errors';
+import type { ThemeColorMap, ThemeColorPalette, ThemePaletteResult } from './theme.types';
 
 type RgbColor = {
   red: number;
@@ -21,7 +22,7 @@ const parseAccentColor = (accentHex: string): AccentColor => {
   const hexMatch: RegExpExecArray | null = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(accentHex.trim());
 
   if (hexMatch === null) {
-    throw new TypeError('Accent color must be a 3- or 6-digit hex value.');
+    throw new Error('Accent color must be a 3- or 6-digit hex value.');
   }
 
   const capturedHex: string = hexMatch[1];
@@ -108,92 +109,96 @@ const convertLinearChannelToSrgb = (channel: number): number => {
   return Math.min(Math.max(srgbChannel, 0), 1);
 };
 
-export const createAccentThemePalette = (accentHex: string): ThemeColorPalette => {
-  const accent: AccentColor = parseAccentColor(accentHex);
-  const primaryChroma: number = Math.min(accent.chroma, 0.16);
-  const lightPrimaryColor: OklchColor = {
-    lightness: 0.48,
-    chroma: primaryChroma,
-    hue: accent.hue,
-  };
-  const darkPrimaryColor: OklchColor = {
-    lightness: 0.76,
-    chroma: primaryChroma,
-    hue: accent.hue,
-  };
-  const lightPrimary: string = toOklch(
-    lightPrimaryColor.lightness,
-    lightPrimaryColor.chroma,
-    lightPrimaryColor.hue,
-  );
-  const darkPrimary: string = toOklch(
-    darkPrimaryColor.lightness,
-    darkPrimaryColor.chroma,
-    darkPrimaryColor.hue,
-  );
-  const lightPrimaryForeground: string = getAccessibleForeground(
-    convertOklchToRgb(lightPrimaryColor),
-  );
-  const darkPrimaryForeground: string = getAccessibleForeground(
-    convertOklchToRgb(darkPrimaryColor),
-  );
-  const light: ThemeColorMap = {
-    '--background': getTintedNeutral(accent, 0.985, 0.08),
-    '--foreground': getTintedNeutral(accent, 0.205, 0.25),
-    '--card': getTintedNeutral(accent, 1, 0.04),
-    '--card-foreground': getTintedNeutral(accent, 0.205, 0.25),
-    '--popover': getTintedNeutral(accent, 1, 0.04),
-    '--popover-foreground': getTintedNeutral(accent, 0.205, 0.25),
-    '--primary': lightPrimary,
-    '--primary-foreground': lightPrimaryForeground,
-    '--secondary': getTintedNeutral(accent, 0.97, 0.12),
-    '--secondary-foreground': getTintedNeutral(accent, 0.205, 0.25),
-    '--muted': getTintedNeutral(accent, 0.97, 0.08),
-    '--muted-foreground': getTintedNeutral(accent, 0.5, 0.15),
-    '--accent': getTintedNeutral(accent, 0.94, 0.18),
-    '--accent-foreground': getTintedNeutral(accent, 0.205, 0.25),
-    '--destructive': 'oklch(0.577 0.245 27.325)',
-    '--border': getTintedNeutral(accent, 0.922, 0.12),
-    '--input': getTintedNeutral(accent, 0.922, 0.12),
-    '--ring': lightPrimary,
-    '--sidebar': getTintedNeutral(accent, 0.985, 0.08),
-    '--sidebar-foreground': getTintedNeutral(accent, 0.145, 0.25),
-    '--sidebar-primary': lightPrimary,
-    '--sidebar-primary-foreground': lightPrimaryForeground,
-    '--sidebar-accent': getTintedNeutral(accent, 0.97, 0.12),
-    '--sidebar-accent-foreground': getTintedNeutral(accent, 0.205, 0.25),
-    '--sidebar-border': getTintedNeutral(accent, 0.922, 0.12),
-    '--sidebar-ring': lightPrimary,
-  };
+export const createAccentThemePalette = (accentHex: string): ThemePaletteResult => {
+  try {
+    const accent: AccentColor = parseAccentColor(accentHex);
+    const primaryChroma: number = Math.min(accent.chroma, 0.16);
+    const lightPrimaryColor: OklchColor = {
+      lightness: 0.48,
+      chroma: primaryChroma,
+      hue: accent.hue,
+    };
+    const darkPrimaryColor: OklchColor = {
+      lightness: 0.76,
+      chroma: primaryChroma,
+      hue: accent.hue,
+    };
+    const lightPrimary: string = toOklch(
+      lightPrimaryColor.lightness,
+      lightPrimaryColor.chroma,
+      lightPrimaryColor.hue,
+    );
+    const darkPrimary: string = toOklch(
+      darkPrimaryColor.lightness,
+      darkPrimaryColor.chroma,
+      darkPrimaryColor.hue,
+    );
+    const lightPrimaryForeground: string = getAccessibleForeground(
+      convertOklchToRgb(lightPrimaryColor),
+    );
+    const darkPrimaryForeground: string = getAccessibleForeground(
+      convertOklchToRgb(darkPrimaryColor),
+    );
+    const light: ThemeColorMap = {
+      '--background': getTintedNeutral(accent, 0.985, 0.08),
+      '--foreground': getTintedNeutral(accent, 0.205, 0.25),
+      '--card': getTintedNeutral(accent, 1, 0.04),
+      '--card-foreground': getTintedNeutral(accent, 0.205, 0.25),
+      '--popover': getTintedNeutral(accent, 1, 0.04),
+      '--popover-foreground': getTintedNeutral(accent, 0.205, 0.25),
+      '--primary': lightPrimary,
+      '--primary-foreground': lightPrimaryForeground,
+      '--secondary': getTintedNeutral(accent, 0.97, 0.12),
+      '--secondary-foreground': getTintedNeutral(accent, 0.205, 0.25),
+      '--muted': getTintedNeutral(accent, 0.97, 0.08),
+      '--muted-foreground': getTintedNeutral(accent, 0.5, 0.15),
+      '--accent': getTintedNeutral(accent, 0.94, 0.18),
+      '--accent-foreground': getTintedNeutral(accent, 0.205, 0.25),
+      '--destructive': 'oklch(0.577 0.245 27.325)',
+      '--border': getTintedNeutral(accent, 0.922, 0.12),
+      '--input': getTintedNeutral(accent, 0.922, 0.12),
+      '--ring': lightPrimary,
+      '--sidebar': getTintedNeutral(accent, 0.985, 0.08),
+      '--sidebar-foreground': getTintedNeutral(accent, 0.145, 0.25),
+      '--sidebar-primary': lightPrimary,
+      '--sidebar-primary-foreground': lightPrimaryForeground,
+      '--sidebar-accent': getTintedNeutral(accent, 0.97, 0.12),
+      '--sidebar-accent-foreground': getTintedNeutral(accent, 0.205, 0.25),
+      '--sidebar-border': getTintedNeutral(accent, 0.922, 0.12),
+      '--sidebar-ring': lightPrimary,
+    };
 
-  const dark: ThemeColorMap = {
-    '--background': getTintedNeutral(accent, 0.145, 0.08),
-    '--foreground': getTintedNeutral(accent, 0.985, 0.12),
-    '--card': getTintedNeutral(accent, 0.205, 0.08),
-    '--card-foreground': getTintedNeutral(accent, 0.985, 0.12),
-    '--popover': getTintedNeutral(accent, 0.205, 0.08),
-    '--popover-foreground': getTintedNeutral(accent, 0.985, 0.12),
-    '--primary': darkPrimary,
-    '--primary-foreground': darkPrimaryForeground,
-    '--secondary': getTintedNeutral(accent, 0.269, 0.12),
-    '--secondary-foreground': getTintedNeutral(accent, 0.985, 0.12),
-    '--muted': getTintedNeutral(accent, 0.269, 0.08),
-    '--muted-foreground': getTintedNeutral(accent, 0.708, 0.15),
-    '--accent': getTintedNeutral(accent, 0.269, 0.18),
-    '--accent-foreground': getTintedNeutral(accent, 0.985, 0.12),
-    '--destructive': 'oklch(0.704 0.191 22.216)',
-    '--border': 'oklch(1 0 0 / 10%)',
-    '--input': 'oklch(1 0 0 / 15%)',
-    '--ring': darkPrimary,
-    '--sidebar': getTintedNeutral(accent, 0.205, 0.08),
-    '--sidebar-foreground': getTintedNeutral(accent, 0.985, 0.12),
-    '--sidebar-primary': darkPrimary,
-    '--sidebar-primary-foreground': darkPrimaryForeground,
-    '--sidebar-accent': getTintedNeutral(accent, 0.269, 0.12),
-    '--sidebar-accent-foreground': getTintedNeutral(accent, 0.985, 0.12),
-    '--sidebar-border': 'oklch(1 0 0 / 10%)',
-    '--sidebar-ring': darkPrimary,
-  };
+    const dark: ThemeColorMap = {
+      '--background': getTintedNeutral(accent, 0.145, 0.08),
+      '--foreground': getTintedNeutral(accent, 0.985, 0.12),
+      '--card': getTintedNeutral(accent, 0.205, 0.08),
+      '--card-foreground': getTintedNeutral(accent, 0.985, 0.12),
+      '--popover': getTintedNeutral(accent, 0.205, 0.08),
+      '--popover-foreground': getTintedNeutral(accent, 0.985, 0.12),
+      '--primary': darkPrimary,
+      '--primary-foreground': darkPrimaryForeground,
+      '--secondary': getTintedNeutral(accent, 0.269, 0.12),
+      '--secondary-foreground': getTintedNeutral(accent, 0.985, 0.12),
+      '--muted': getTintedNeutral(accent, 0.269, 0.08),
+      '--muted-foreground': getTintedNeutral(accent, 0.708, 0.15),
+      '--accent': getTintedNeutral(accent, 0.269, 0.18),
+      '--accent-foreground': getTintedNeutral(accent, 0.985, 0.12),
+      '--destructive': 'oklch(0.704 0.191 22.216)',
+      '--border': 'oklch(1 0 0 / 10%)',
+      '--input': 'oklch(1 0 0 / 15%)',
+      '--ring': darkPrimary,
+      '--sidebar': getTintedNeutral(accent, 0.205, 0.08),
+      '--sidebar-foreground': getTintedNeutral(accent, 0.985, 0.12),
+      '--sidebar-primary': darkPrimary,
+      '--sidebar-primary-foreground': darkPrimaryForeground,
+      '--sidebar-accent': getTintedNeutral(accent, 0.269, 0.12),
+      '--sidebar-accent-foreground': getTintedNeutral(accent, 0.985, 0.12),
+      '--sidebar-border': 'oklch(1 0 0 / 10%)',
+      '--sidebar-ring': darkPrimary,
+    };
 
-  return { light, dark };
+    return { success: true, data: { light, dark } };
+  } catch (error: unknown) {
+    return handleError<ThemeColorPalette>(error);
+  }
 };
