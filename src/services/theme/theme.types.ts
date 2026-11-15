@@ -41,6 +41,11 @@ export const themeColorNames = [
   '--border',
   '--input',
   '--ring',
+  '--svg-base',
+  '--svg-deep',
+  '--svg-dark',
+  '--svg-light',
+  '--svg-pale',
   '--sidebar',
   '--sidebar-foreground',
   '--sidebar-primary',
@@ -54,6 +59,18 @@ export const themeColorNames = [
 export type ThemeColorName = (typeof themeColorNames)[number];
 
 export type ThemeColorMap = Record<ThemeColorName, string>;
+
+export const themeSvgColorNames = [
+  '--svg-base',
+  '--svg-deep',
+  '--svg-dark',
+  '--svg-light',
+  '--svg-pale',
+] as const;
+
+export type ThemeSvgColorName = (typeof themeSvgColorNames)[number];
+
+export type ThemeSvgColorMap = Pick<ThemeColorMap, ThemeSvgColorName>;
 
 export type ThemeChartColorMap = Pick<
   ThemeColorMap,

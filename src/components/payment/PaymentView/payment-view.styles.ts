@@ -13,7 +13,7 @@ export const paymentViewClassNames = {
   description: cn('mt-3', 'text-muted-foreground'),
   alert: cn('flex flex-col items-start', 'mt-6 gap-3'),
   error: cn('text-destructive', 'text-sm'),
-  loading: cn('mt-8', 'text-muted-foreground'),
+  loading: cn('mt-8 flex items-center gap-2', 'text-muted-foreground'),
   emptyBlock: cn('mt-8 p-5', 'border border-border bg-background', 'rounded-2xl'),
   emptyTitle: cn('text-lg font-semibold'),
   emptyDescription: cn('mt-2', 'text-muted-foreground', 'text-sm'),
@@ -23,7 +23,7 @@ export const paymentViewClassNames = {
   statusLabel: cn('font-medium'),
   confirmButton: cn('mt-5'),
   giftBlock: cn('mt-8 p-5', 'border-2 border-primary/30 bg-primary/5', 'rounded-2xl'),
-  giftContent: cn('flex items-start', 'gap-4'),
+  giftContent: cn('flex items-center justify-start', 'gap-4 text-left'),
   giftIconFrame: cn(
     'flex shrink-0 items-center justify-center',
     'size-11',

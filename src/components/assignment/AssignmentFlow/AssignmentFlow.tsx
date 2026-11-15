@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 import { Check, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { GardenVisualisation } from '@/components/visualisation/GardenVisualisation';
 import { useAssignmentFlow } from '@/features/assignment/hooks/use-assignment-flow';
@@ -124,6 +125,7 @@ export const AssignmentFlow = (): ReactNode => {
 
       {isLoading && (
         <p aria-live="polite" className={classNames.status} role="status">
+          <Spinner aria-hidden="true" />
           {texts.loading}
         </p>
       )}
@@ -200,7 +202,11 @@ export const AssignmentFlow = (): ReactNode => {
                       type="button"
                       variant="outline"
                     >
-                      <Plus aria-hidden="true" className={classNames.actionIcon} />
+                      {isLoadingMore ? (
+                        <Spinner aria-hidden="true" className={classNames.actionIcon} />
+                      ) : (
+                        <Plus aria-hidden="true" className={classNames.actionIcon} />
+                      )}
                     </Button>
                   }
                 />
@@ -239,6 +245,7 @@ export const AssignmentFlow = (): ReactNode => {
                     : texts.selectionPrompt}
               </p>
               <Button disabled={!canAssign} onClick={handleAssign} type="button">
+                {isAssigning ? <Spinner aria-hidden="true" /> : null}
                 {isAssigning ? texts.assigning : texts.confirmAssignment}
               </Button>
             </div>

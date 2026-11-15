@@ -10,5 +10,9 @@ export const ownershipAccountBlockClassNames = {
   title: cn('text-2xl font-semibold'),
   description: cn('mt-3', 'text-muted-foreground'),
   action: cn('mt-6'),
-  paymentStatus: cn('mt-6', 'text-muted-foreground', 'text-sm'),
+  paymentStatus: cn(
+    'mt-6 flex items-center justify-center gap-2',
+    'text-muted-foreground',
+    'text-sm',
+  ),
 } as const;

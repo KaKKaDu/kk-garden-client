@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { signInOtpLength } from '@/features/auth/constants/sign-in.constants';
 import { signInEmailSchema, signInOtpSchema } from '@/features/auth/schemas/sign-in.schemas';
@@ -159,6 +160,7 @@ export const EmailOtpSignInForm = (): ReactNode => {
           </div>
           <SignInFeedback feedback={feedback} />
           <Button className={classNames.submitButton} disabled={isSubmitting} type="submit">
+            {isSubmitting ? <Spinner aria-hidden="true" /> : null}
             {verifyButtonLabel}
           </Button>
         </form>
@@ -209,6 +211,7 @@ export const EmailOtpSignInForm = (): ReactNode => {
       </div>
       <SignInFeedback feedback={feedback} />
       <Button className={classNames.submitButton} disabled={isSubmitting} type="submit">
+        {isSubmitting ? <Spinner aria-hidden="true" /> : null}
         {sendButtonLabel}
       </Button>
     </form>

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { authRoutePaths } from '@/features/auth/constants/auth-route.constants';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import type { SocialAuthProvider } from '@/services/auth/auth.types';
@@ -66,7 +67,7 @@ export const SocialSignInButtons = (): ReactNode => {
         type="button"
         variant="outline"
       >
-        <GoogleIcon />
+        {pendingProvider === 'google' ? <Spinner aria-hidden="true" /> : <GoogleIcon />}
         {googleButtonLabel}
       </Button>
       <Button
@@ -76,7 +77,7 @@ export const SocialSignInButtons = (): ReactNode => {
         type="button"
         variant="outline"
       >
-        <GitHubIcon />
+        {pendingProvider === 'github' ? <Spinner aria-hidden="true" /> : <GitHubIcon />}
         {gitHubButtonLabel}
       </Button>
       <SignInFeedback feedback={feedback} />

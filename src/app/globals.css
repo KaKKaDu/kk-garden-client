@@ -9,6 +9,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: Arial, Helvetica, sans-serif;
+
   --color-sidebar-ring: var(--sidebar-ring);
 
   --color-sidebar-border: var(--sidebar-border);
@@ -89,6 +91,11 @@
 :root {
   --radius: 0.625rem;
   --component-shadow-color: color-mix(in oklch, var(--foreground) 24%, transparent);
+  --svg-base: #7dbe5e;
+  --svg-deep: #2e6b34;
+  --svg-dark: #4c9a4a;
+  --svg-light: #a6d854;
+  --svg-pale: #b5e08a;
 }
 
 @layer base {

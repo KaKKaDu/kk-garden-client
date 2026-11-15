@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { usePayment } from '@/features/payment/hooks/use-payment';
 import { paymentRoutePaths } from '@/features/payment/constants/payment-route.constants';
 import { ownershipRoutePaths } from '@/features/ownership/constants/ownership-route.constants';
@@ -36,6 +37,7 @@ export const NotAssignedAccountBlock = (): ReactNode => {
       <p className={classNames.description}>{description}</p>
       {isLoading ? (
         <p aria-live="polite" className={classNames.paymentStatus} role="status">
+          <Spinner aria-hidden="true" />
           {texts.checkingPayment}
         </p>
       ) : (

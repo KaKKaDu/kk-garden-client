@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
+import { ProjectStyleMenuIcon } from './header/ProjectStyleMenuIcon/ProjectStyleMenuIcon';
 import { getBrandMarkClassName } from './brand-mark.styles';
 
 type BrandMarkProps = {
@@ -9,7 +9,10 @@ type BrandMarkProps = {
 };
 
 export const BrandMark = ({ size, interactive = false }: BrandMarkProps): ReactElement => {
-  const imageSize: number = useMemo((): number => (size === 'large' ? 44 : 36), [size]);
+  const iconClassName: string = useMemo(
+    (): string => (size === 'large' ? 'size-11' : 'size-9'),
+    [size],
+  );
   const className: string = useMemo(
     (): string => getBrandMarkClassName(size, interactive),
     [interactive, size],
@@ -17,7 +20,7 @@ export const BrandMark = ({ size, interactive = false }: BrandMarkProps): ReactE
 
   return (
     <span className={className}>
-      <Image alt="" aria-hidden height={imageSize} src="/logo.svg" width={imageSize} />
+      <ProjectStyleMenuIcon className={iconClassName} name="logo" />
     </span>
   );
 };

@@ -4,8 +4,6 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { rootLayoutClassNames } from './root-layout.styles';
 import './globals.css';
 
-const defaultAccentHex = '#5CFF7B' as const;
-
 export const metadata: Metadata = {
   title: '2k-garden',
   description:
@@ -23,7 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={rootLayoutClassNames.html}>
       <body className={rootLayoutClassNames.body}>
-        <AccentThemeProvider accentHex={defaultAccentHex}>
+        <AccentThemeProvider>
           <TooltipProvider>{children}</TooltipProvider>
         </AccentThemeProvider>
       </body>

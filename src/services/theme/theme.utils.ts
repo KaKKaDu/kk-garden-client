@@ -4,6 +4,7 @@ import type {
   ThemeColorMap,
   ThemeColorPalette,
   ThemePaletteResult,
+  ThemeSvgColorMap,
 } from './theme.types';
 
 type RgbColor = {
@@ -22,6 +23,12 @@ type AccentColor = {
   chroma: number;
   hue: number;
 };
+
+const fixedThemeSvgColors = {
+  '--svg-base': '#7DBE5E',
+  '--svg-deep': '#2E6B34',
+  '--svg-dark': '#4C9A4A',
+} as const satisfies Pick<ThemeSvgColorMap, '--svg-base' | '--svg-deep' | '--svg-dark'>;
 
 const parseAccentColor = (accentHex: string): AccentColor => {
   const hexMatch: RegExpExecArray | null = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(accentHex.trim());
@@ -42,7 +49,10 @@ const parseAccentColor = (accentHex: string): AccentColor => {
   };
   const oklchColor: OklchColor = convertRgbToOklch(rgb);
 
-  return { chroma: oklchColor.chroma, hue: oklchColor.hue };
+  return {
+    chroma: oklchColor.chroma,
+    hue: oklchColor.hue,
+  };
 };
 
 const convertSrgbChannelToLinear = (channel: number): number =>
@@ -113,6 +123,20 @@ const getAccessibleForeground = ({ red, green, blue }: RgbColor): string => {
   return whiteContrast > blackContrast ? '#ffffff' : '#000000';
 };
 
+const createSvgThemeColors = (accent: AccentColor): ThemeSvgColorMap => ({
+  ...fixedThemeSvgColors,
+  '--svg-light': convertOklchToHex({
+    lightness: 0.78,
+    chroma: accent.chroma * 0.45,
+    hue: accent.hue - 6,
+  }),
+  '--svg-pale': convertOklchToHex({
+    lightness: 0.9,
+    chroma: accent.chroma * 0.3,
+    hue: accent.hue - 3,
+  }),
+});
+
 const convertOklchToRgb = ({ lightness, chroma, hue }: OklchColor): RgbColor => {
   const radians: number = (hue * Math.PI) / 180;
   const a: number = chroma * Math.cos(radians);
@@ -131,6 +155,16 @@ const convertOklchToRgb = ({ lightness, chroma, hue }: OklchColor): RgbColor => 
   };
 };
 
+const convertOklchToHex = (color: OklchColor): string => {
+  const rgb: RgbColor = convertOklchToRgb(color);
+  const toHex = (channel: number): string =>
+    Math.round(channel * 255)
+      .toString(16)
+      .padStart(2, '0');
+
+  return `#${toHex(rgb.red)}${toHex(rgb.green)}${toHex(rgb.blue)}`.toUpperCase();
+};
+
 const convertLinearChannelToSrgb = (channel: number): number => {
   const srgbChannel: number =
     channel <= 0.0031308 ? channel * 12.92 : 1.055 * channel ** (1 / 2.4) - 0.055;
@@ -141,6 +175,7 @@ const convertLinearChannelToSrgb = (channel: number): number => {
 export const createAccentThemePalette = (accentHex: string): ThemePaletteResult => {
   try {
     const accent: AccentColor = parseAccentColor(accentHex);
+    const svgColors: ThemeSvgColorMap = createSvgThemeColors(accent);
     const primaryChroma: number = Math.min(accent.chroma, 0.16);
     const lightPrimaryColor: OklchColor = {
       lightness: 0.48,
@@ -168,6 +203,7 @@ export const createAccentThemePalette = (accentHex: string): ThemePaletteResult 
     const darkPrimaryForeground: string = getAccessibleForeground(
       convertOklchToRgb(darkPrimaryColor),
     );
+    const lightSecondary: string = getTintedNeutral(accent, 0.97, 0.12);
     const light: ThemeColorMap = {
       ...createAccentChartPalette(accent, 0.62),
       '--background': getTintedNeutral(accent, 0.985, 0.08),
@@ -178,7 +214,7 @@ export const createAccentThemePalette = (accentHex: string): ThemePaletteResult 
       '--popover-foreground': getTintedNeutral(accent, 0.205, 0.25),
       '--primary': lightPrimary,
       '--primary-foreground': lightPrimaryForeground,
-      '--secondary': getTintedNeutral(accent, 0.97, 0.12),
+      '--secondary': lightSecondary,
       '--secondary-foreground': getTintedNeutral(accent, 0.205, 0.25),
       '--muted': getTintedNeutral(accent, 0.97, 0.08),
       '--muted-foreground': getTintedNeutral(accent, 0.5, 0.15),
@@ -188,6 +224,7 @@ export const createAccentThemePalette = (accentHex: string): ThemePaletteResult 
       '--border': getTintedNeutral(accent, 0.922, 0.12),
       '--input': getTintedNeutral(accent, 0.922, 0.12),
       '--ring': lightPrimary,
+      ...svgColors,
       '--sidebar': getTintedNeutral(accent, 0.985, 0.08),
       '--sidebar-foreground': getTintedNeutral(accent, 0.145, 0.25),
       '--sidebar-primary': lightPrimary,
@@ -218,6 +255,7 @@ export const createAccentThemePalette = (accentHex: string): ThemePaletteResult 
       '--border': 'oklch(1 0 0 / 10%)',
       '--input': 'oklch(1 0 0 / 15%)',
       '--ring': darkPrimary,
+      ...svgColors,
       '--sidebar': getTintedNeutral(accent, 0.205, 0.08),
       '--sidebar-foreground': getTintedNeutral(accent, 0.985, 0.12),
       '--sidebar-primary': darkPrimary,

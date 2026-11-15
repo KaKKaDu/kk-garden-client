@@ -7,7 +7,7 @@ export const profileEditFormClassNames = {
     'border-2 border-primary/20 bg-card/90 text-card-foreground',
     'rounded-3xl shadow-[8px_8px_0_var(--component-shadow-color)]',
   ),
-  loading: cn('text-muted-foreground', 'text-sm'),
+  loading: cn('flex items-center gap-2', 'text-muted-foreground', 'text-sm'),
   error: cn('text-destructive', 'text-sm'),
   form: cn('grid', 'gap-8', 'sm:grid-cols-[10rem_minmax(0,1fr)]'),
   avatarColumn: cn('flex flex-col items-center', 'gap-3', 'sm:items-start sm:self-center'),

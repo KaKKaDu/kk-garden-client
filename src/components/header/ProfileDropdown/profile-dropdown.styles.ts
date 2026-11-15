@@ -1,9 +1,19 @@
 import { cn } from '@/utils/class-names.utils';
 
 export const profileDropdownClassNames = {
-  avatar: cn('block', 'relative', 'size-full', 'aspect-square overflow-hidden rounded-full'),
-  avatarImage: cn('block', 'absolute inset-0', 'h-full w-full object-cover'),
-  avatarFallback: cn('size-8', 'text-muted-foreground'),
+  profileIcon: cn('size-8'),
+  profileHeader: cn('flex flex-col items-center text-center'),
+  avatarFrame: cn(
+    'mb-2 grid size-16 place-items-center p-1',
+    'rounded-full border-2 border-primary/50 bg-gradient-to-br from-primary/40 via-accent/50 to-secondary',
+    'shadow-[0_0_0_3px_var(--background),0_0_0_5px_var(--primary)]',
+  ),
+  avatar: cn(
+    'relative grid size-full place-items-center overflow-hidden rounded-full',
+    'border-2 border-background bg-muted',
+  ),
+  avatarImage: cn('absolute inset-0 size-full object-cover'),
+  avatarFallback: cn('size-7 text-primary'),
   profileName: cn('block', 'font-semibold'),
   profileLabel: cn(
     'block',

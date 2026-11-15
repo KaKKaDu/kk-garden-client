@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { getAuthOperationErrorMessage } from '@/features/auth/utils/auth-result.utils';
 import type { SignInFeedbackMessage } from '@/features/auth/types/sign-in.types';
@@ -42,7 +43,7 @@ export const PasskeySignInButton = (): ReactNode => {
         type="button"
         variant="outline"
       >
-        <KeyRound aria-hidden="true" />
+        {isSubmitting ? <Spinner aria-hidden="true" /> : <KeyRound aria-hidden="true" />}
         {buttonLabel}
       </Button>
       <SignInFeedback feedback={feedback} />

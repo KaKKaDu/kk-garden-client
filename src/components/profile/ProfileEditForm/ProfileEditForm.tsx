@@ -6,6 +6,7 @@ import { Check, Copy, Pencil, UserRound } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import {
   profileEditSchema,
@@ -112,6 +113,7 @@ export const ProfileEditForm = (): ReactNode => {
     <section className={classNames.section}>
       {isLoading ? (
         <p className={classNames.loading} role="status">
+          <Spinner aria-hidden="true" />
           {texts.loading}
         </p>
       ) : profileLoadError !== null ? (
@@ -231,6 +233,7 @@ export const ProfileEditForm = (): ReactNode => {
               size="lg"
               type="submit"
             >
+              {isSubmitting ? <Spinner aria-hidden="true" /> : null}
               {isSubmitting ? texts.saving : texts.save}
             </Button>
           </div>

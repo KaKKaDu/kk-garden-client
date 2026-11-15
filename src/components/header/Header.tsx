@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { AccentColorPickerButton } from './AccentColorPickerButton/AccentColorPickerButton';
 import { HeaderLogoButton } from './HeaderLogoButton/HeaderLogoButton';
 import { ProfileDropdown } from './ProfileDropdown/ProfileDropdown';
 import { getHeaderNavClassName, headerClassNames } from './header.styles';
@@ -40,6 +41,7 @@ export const Header = (): ReactNode => {
         <div className={headerClassNames.content}>
           <div className={headerClassNames.menu}>
             <HeaderLogoButton isMenuOpen={isMenuOpen} onMenuToggle={handleMenuToggle} />
+            <AccentColorPickerButton isMenuOpen={isMenuOpen} isMobile={isMobile} />
             <ProfileDropdown isMenuOpen={isMenuOpen} isMobile={isMobile} />
           </div>
         </div>

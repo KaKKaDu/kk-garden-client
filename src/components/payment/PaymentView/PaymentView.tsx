@@ -5,6 +5,8 @@ import type { FormEvent } from 'react';
 import { useCallback, useMemo } from 'react';
 import { Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { GoHomeButton } from '@/components/navigation/go-home-button/GoHomeButton';
 import { usePayment } from '@/features/payment/hooks/use-payment';
 import { paymentViewClassNames as classNames } from './payment-view.styles';
 import { paymentViewTexts as texts } from './texts';
@@ -95,6 +97,7 @@ export const PaymentView = (): ReactNode => {
 
         {isLoading && (
           <p aria-live="polite" className={classNames.loading} role="status">
+            <Spinner aria-hidden="true" />
             {texts.loading}
           </p>
         )}
@@ -107,6 +110,7 @@ export const PaymentView = (): ReactNode => {
                 <p className={classNames.emptyDescription}>{texts.noPaymentDescription}</p>
                 <form className={classNames.paymentForm} onSubmit={handleStartPayment}>
                   <Button disabled={isStarting} size="lg" type="submit">
+                    {isStarting ? <Spinner aria-hidden="true" /> : null}
                     {isStarting ? texts.startingPayment : texts.startPayment}
                   </Button>
                 </form>
@@ -132,6 +136,7 @@ export const PaymentView = (): ReactNode => {
                 size="lg"
                 type="button"
               >
+                {isConfirming ? <Spinner aria-hidden="true" /> : null}
                 {isConfirming ? texts.confirmingPayment : texts.confirmPayment}
               </Button>
             )}
@@ -140,8 +145,8 @@ export const PaymentView = (): ReactNode => {
 
         {showPaidPayment && paidPayment !== null ? (
           isPaidGift ? (
-            <div aria-live="polite" className={classNames.giftBlock} role="status">
-              <div className={classNames.giftContent}>
+            <div className={classNames.giftBlock}>
+              <div aria-live="polite" className={classNames.giftContent} role="status">
                 <span className={classNames.giftIconFrame}>
                   <Gift aria-hidden="true" className={classNames.giftIcon} />
                 </span>
@@ -151,10 +156,14 @@ export const PaymentView = (): ReactNode => {
                   <p className={classNames.giftDescription}>{texts.giftDescription}</p>
                 </div>
               </div>
+              <GoHomeButton align="left" spacing="compact" />
             </div>
           ) : (
-            <div aria-live="polite" className={classNames.ownerPaidBlock} role="status">
-              <p className={classNames.statusLabel}>{texts.ownerPaid}</p>
+            <div className={classNames.ownerPaidBlock}>
+              <p aria-live="polite" className={classNames.statusLabel} role="status">
+                {texts.ownerPaid}
+              </p>
+              <GoHomeButton align="left" spacing="compact" />
             </div>
           )
         ) : null}

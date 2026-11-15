@@ -4,6 +4,9 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import Link from 'next/link';
 import { Check, Copy, LogOut, Pencil, UserRound } from 'lucide-react';
 import { CircleButton } from '@/components/ui/circle-button';
+import { Spinner } from '@/components/ui/spinner';
+import { ProjectStyleMenuIcon } from '../ProjectStyleMenuIcon/ProjectStyleMenuIcon';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,15 +73,15 @@ export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps):
     (): string => (profile?.configured === true ? profile.displayName : texts.account),
     [profile],
   );
+  const avatarUrl: string | null = useMemo(
+    (): string | null => profile?.avatar?.url ?? null,
+    [profile?.avatar?.url],
+  );
   const lookupCode: string | null = useMemo(
     (): string | null => profile?.lookupCode ?? null,
     [profile?.lookupCode],
   );
   const { copyLookupCode, status: lookupCodeCopyStatus } = useCopyLookupCode(lookupCode);
-  const avatarUrl: string | null = useMemo(
-    (): string | null => profile?.avatar?.url ?? null,
-    [profile?.avatar?.url],
-  );
   const isMobileMenuClosed: boolean = useMemo(
     (): boolean => isMobile !== false && !isMenuOpen,
     [isMenuOpen, isMobile],
@@ -110,7 +113,7 @@ export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps):
   const signOutIcon: ReactNode = useMemo(
     (): ReactNode =>
       isSigningOut ? (
-        <UserRound aria-hidden="true" className={classNames.icon} />
+        <Spinner aria-hidden="true" className={classNames.icon} />
       ) : (
         <LogOut aria-hidden="true" className={classNames.icon} />
       ),
@@ -140,25 +143,37 @@ export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps):
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        aria-label={texts.openProfileMenu}
-        aria-hidden={isMobileMenuClosed}
-        className={triggerClassName}
-        render={<CircleButton />}
-        tabIndex={isMobileMenuClosed ? -1 : 0}
-      >
-        {avatarUrl ? (
-          <span className={classNames.avatar}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="" className={classNames.avatarImage} src={avatarUrl} />
-          </span>
-        ) : (
-          <UserRound aria-hidden="true" className={classNames.avatarFallback} />
-        )}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" side="right">
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <DropdownMenuTrigger
+              aria-label={texts.openProfileMenu}
+              aria-hidden={isMobileMenuClosed}
+              className={triggerClassName}
+              render={<CircleButton />}
+              tabIndex={isMobileMenuClosed ? -1 : 0}
+            />
+          }
+        >
+          <ProjectStyleMenuIcon className={classNames.profileIcon} name="profile" />
+        </TooltipTrigger>
+        <TooltipContent align="center" side="right">
+          {texts.openProfileMenu}
+        </TooltipContent>
+      </Tooltip>
+      <DropdownMenuContent align="start" side="right" sideOffset={12}>
         <DropdownMenuGroup>
-          <DropdownMenuLabel>
+          <DropdownMenuLabel className={classNames.profileHeader}>
+            <span aria-hidden="true" className={classNames.avatarFrame}>
+              <span className={classNames.avatar}>
+                {avatarUrl !== null ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img alt="" className={classNames.avatarImage} src={avatarUrl} />
+                ) : (
+                  <UserRound aria-hidden="true" className={classNames.avatarFallback} />
+                )}
+              </span>
+            </span>
             <span className={classNames.profileName}>{texts.profile}</span>
             <span className={classNames.profileLabel}>{profileName}</span>
           </DropdownMenuLabel>

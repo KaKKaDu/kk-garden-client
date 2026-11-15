@@ -17,7 +17,7 @@ export const assignmentFlowClassNames = {
     'border border-destructive/40 bg-destructive/5 text-destructive',
     'rounded-xl',
   ),
-  status: cn('mt-8 text-center', 'text-muted-foreground'),
+  status: cn('mt-8 flex items-center justify-center gap-2 text-center', 'text-muted-foreground'),
   carousel: cn('mt-8'),
   slide: cn('min-w-0'),
   visualisationFrame: cn(
