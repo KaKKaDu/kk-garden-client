@@ -8,6 +8,7 @@ type OwnershipStore = {
   error: string | null;
   setLoading: (userId: string) => void;
   setCheck: (userId: string, check: OwnershipCheckData) => void;
+  setAssigned: (userId: string) => void;
   setError: (userId: string, error: string) => void;
   reset: () => void;
 };
@@ -30,6 +31,8 @@ export const useOwnershipStore = create<OwnershipStore>((set) => ({
       check,
       error: null,
     }),
+  setAssigned: (userId: string): void =>
+    set({ status: 'assigned', userId, check: null, error: null }),
   setError: (userId: string, error: string): void =>
     set({ status: 'error', userId, check: null, error }),
   reset: (): void => set(initialOwnershipState),

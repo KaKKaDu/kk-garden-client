@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import type { SignInEmailValues, SignInOtpValues } from '@/features/auth/schemas
 import { getAuthOperationErrorMessage } from '@/features/auth/utils/auth-result.utils';
 import type { SignInFeedbackMessage } from '@/features/auth/types/sign-in.types';
 import { SignInFeedback } from '../SignInFeedback';
+import { emailOtpSignInFormClassNames as classNames } from './email-otp-sign-in-form.styles';
 import { emailOtpSignInTexts as texts } from './texts';
 
 export const EmailOtpSignInForm = (): ReactNode => {
@@ -20,16 +21,41 @@ export const EmailOtpSignInForm = (): ReactNode => {
   const [isCodeRequested, setIsCodeRequested] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<SignInFeedbackMessage | null>(null);
-  const emailForm = useForm<SignInEmailValues>({
+  const {
+    formState: { errors: emailErrors },
+    handleSubmit: handleSubmitEmail,
+    register: registerEmail,
+  } = useForm<SignInEmailValues>({
     resolver: zodResolver(signInEmailSchema),
     defaultValues: { email: '' },
     mode: 'onSubmit',
   });
-  const otpForm = useForm<SignInOtpValues>({
+  const {
+    formState: { errors: otpErrors },
+    handleSubmit: handleSubmitOtp,
+    register: registerOtp,
+    reset: resetOtp,
+  } = useForm<SignInOtpValues>({
     resolver: zodResolver(signInOtpSchema),
     defaultValues: { otp: '' },
     mode: 'onSubmit',
   });
+  const otpError: string | undefined = useMemo(
+    (): string | undefined => otpErrors.otp?.message,
+    [otpErrors.otp?.message],
+  );
+  const emailError: string | undefined = useMemo(
+    (): string | undefined => emailErrors.email?.message,
+    [emailErrors.email?.message],
+  );
+  const verifyButtonLabel: string = useMemo(
+    (): string => (isSubmitting ? texts.verifyingCode : texts.verifyCode),
+    [isSubmitting],
+  );
+  const sendButtonLabel: string = useMemo(
+    (): string => (isSubmitting ? texts.sendingCode : texts.sendCode),
+    [isSubmitting],
+  );
 
   const requestCode = useCallback(
     async (address: string, isResend: boolean): Promise<void> => {
@@ -92,25 +118,31 @@ export const EmailOtpSignInForm = (): ReactNode => {
   const handleChangeEmail = useCallback((): void => {
     setIsCodeRequested(false);
     setFeedback(null);
-    otpForm.reset({ otp: '' });
-  }, [otpForm]);
+    resetOtp({ otp: '' });
+  }, [resetOtp]);
+  const submitOtp = useMemo(
+    () => handleSubmitOtp(handleVerifyCode),
+    [handleSubmitOtp, handleVerifyCode],
+  );
+  const submitEmail = useMemo(
+    () => handleSubmitEmail(handleRequestCode),
+    [handleSubmitEmail, handleRequestCode],
+  );
 
   if (isCodeRequested) {
-    const otpError: string | undefined = otpForm.formState.errors.otp?.message;
-
     return (
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">
+      <div className={classNames.content}>
+        <p className={classNames.prompt}>
           {texts.promptForCode(String(signInOtpLength))}{' '}
-          <span className="font-medium">{email}</span>.
+          <span className={classNames.email}>{email}</span>.
         </p>
-        <form className="space-y-3" noValidate onSubmit={otpForm.handleSubmit(handleVerifyCode)}>
-          <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="sign-in-otp">
+        <form className={classNames.form} noValidate onSubmit={submitOtp}>
+          <div className={classNames.field}>
+            <label className={classNames.label} htmlFor="sign-in-otp">
               {texts.otpLabel}
             </label>
             <Input
-              {...otpForm.register('otp')}
+              {...registerOtp('otp')}
               aria-describedby={otpError ? 'sign-in-otp-error' : undefined}
               aria-invalid={otpError !== undefined}
               autoComplete="one-time-code"
@@ -120,19 +152,19 @@ export const EmailOtpSignInForm = (): ReactNode => {
               placeholder={texts.otpPlaceholder(String(signInOtpLength))}
             />
             {otpError ? (
-              <p className="text-sm text-destructive" id="sign-in-otp-error" role="alert">
+              <p className={classNames.error} id="sign-in-otp-error" role="alert">
                 {otpError}
               </p>
             ) : null}
           </div>
           <SignInFeedback feedback={feedback} />
-          <Button className="h-11 w-full" disabled={isSubmitting} type="submit">
-            {isSubmitting ? texts.verifyingCode : texts.verifyCode}
+          <Button className={classNames.submitButton} disabled={isSubmitting} type="submit">
+            {verifyButtonLabel}
           </Button>
         </form>
-        <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+        <div className={classNames.feedbackActions}>
           <Button
-            className="px-0"
+            className={classNames.quietAction}
             disabled={isSubmitting}
             onClick={handleChangeEmail}
             type="button"
@@ -141,7 +173,7 @@ export const EmailOtpSignInForm = (): ReactNode => {
             {texts.changeEmail}
           </Button>
           <Button
-            className="px-0"
+            className={classNames.quietAction}
             disabled={isSubmitting}
             onClick={handleResendCode}
             type="button"
@@ -154,16 +186,14 @@ export const EmailOtpSignInForm = (): ReactNode => {
     );
   }
 
-  const emailError: string | undefined = emailForm.formState.errors.email?.message;
-
   return (
-    <form className="space-y-4" noValidate onSubmit={emailForm.handleSubmit(handleRequestCode)}>
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="sign-in-email">
+    <form className={classNames.emailForm} noValidate onSubmit={submitEmail}>
+      <div className={classNames.field}>
+        <label className={classNames.label} htmlFor="sign-in-email">
           {texts.emailLabel}
         </label>
         <Input
-          {...emailForm.register('email')}
+          {...registerEmail('email')}
           aria-describedby={emailError ? 'sign-in-email-error' : undefined}
           aria-invalid={emailError !== undefined}
           autoComplete="email"
@@ -172,14 +202,14 @@ export const EmailOtpSignInForm = (): ReactNode => {
           type="email"
         />
         {emailError ? (
-          <p className="text-sm text-destructive" id="sign-in-email-error" role="alert">
+          <p className={classNames.error} id="sign-in-email-error" role="alert">
             {emailError}
           </p>
         ) : null}
       </div>
       <SignInFeedback feedback={feedback} />
-      <Button className="h-11 w-full" disabled={isSubmitting} type="submit">
-        {isSubmitting ? texts.sendingCode : texts.sendCode}
+      <Button className={classNames.submitButton} disabled={isSubmitting} type="submit">
+        {sendButtonLabel}
       </Button>
     </form>
   );

@@ -1,6 +1,28 @@
 import type { SuccessDataAny } from '@kk-garden/shared/errors';
 
+export const themeChartColorNames = [
+  '--chart-1',
+  '--chart-2',
+  '--chart-3',
+  '--chart-4',
+  '--chart-5',
+] as const;
+
+export type ThemeChartColorName = (typeof themeChartColorNames)[number];
+
+export const themeChartColorAliasNames = [
+  '--color-chart-1',
+  '--color-chart-2',
+  '--color-chart-3',
+  '--color-chart-4',
+  '--color-chart-5',
+] as const;
+
+export type ThemeChartColorAliasName = (typeof themeChartColorAliasNames)[number];
+
 export const themeColorNames = [
+  ...themeChartColorNames,
+  ...themeChartColorAliasNames,
   '--background',
   '--foreground',
   '--card',
@@ -32,6 +54,11 @@ export const themeColorNames = [
 export type ThemeColorName = (typeof themeColorNames)[number];
 
 export type ThemeColorMap = Record<ThemeColorName, string>;
+
+export type ThemeChartColorMap = Pick<
+  ThemeColorMap,
+  ThemeChartColorName | ThemeChartColorAliasName
+>;
 
 export type ThemeColorPalette = {
   light: ThemeColorMap;

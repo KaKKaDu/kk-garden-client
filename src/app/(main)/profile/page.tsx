@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { ProfileEditForm } from '@/components/profile/ProfileEditForm/ProfileEditForm';
+import { profilePageClassNames } from './profile-page.styles';
 
 export default function EditProfilePage(): ReactNode {
   return (
-    <main className="flex min-h-screen items-center justify-center">
+    <main className={profilePageClassNames.main}>
       <ProfileEditForm />
     </main>
   );

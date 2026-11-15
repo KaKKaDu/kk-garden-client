@@ -1,0 +1,57 @@
+import { cn } from '@/utils/class-names.utils';
+
+export const signInViewClassNames = {
+  main: cn('flex items-center justify-center', 'min-h-screen p-4 sm:p-8', 'bg-muted/40'),
+  card: cn(
+    'grid',
+    'w-full max-w-5xl',
+    'border-2 bg-card',
+    'overflow-hidden rounded-3xl shadow-[8px_8px_0_var(--component-shadow-color)] lg:min-h-[42rem] lg:grid-cols-[0.95fr_1.05fr]',
+  ),
+  aside: cn(
+    'flex flex-col justify-between',
+    'p-10',
+    'bg-primary text-primary-foreground',
+    'relative hidden overflow-hidden lg:flex',
+  ),
+  topDecoration: cn(
+    'absolute -right-24 -top-20 size-80',
+    'border-primary-foreground/10',
+    'rounded-full border',
+  ),
+  bottomDecoration: cn(
+    'absolute -bottom-40 -left-20 size-96',
+    'border-primary-foreground/10',
+    'rounded-full border',
+  ),
+  brandRow: cn('flex items-center', 'gap-4', 'relative'),
+  brandName: cn('text-xl font-semibold tracking-tight'),
+  brandCopy: cn('relative max-w-sm space-y-5'),
+  eyebrow: cn('text-primary-foreground/70', 'text-sm font-medium uppercase tracking-[0.2em]'),
+  headline: cn('text-5xl font-semibold leading-tight tracking-tight'),
+  description: cn('text-primary-foreground/75', 'text-base leading-7'),
+  tagline: cn('text-primary-foreground/60', 'relative text-sm'),
+  content: cn('flex flex-col', 'px-6 py-10', 'sm:px-10 lg:px-14'),
+  contentColumn: cn('flex flex-1 flex-col', 'mx-auto w-full max-w-md'),
+  mobileBrand: cn(
+    'flex items-center',
+    'mb-7 gap-2',
+    'text-sm font-semibold tracking-tight lg:hidden',
+  ),
+  tabs: cn('flex', 'flex-1 gap-7'),
+  tabList: cn('grid', 'w-full gap-2', 'grid-cols-2'),
+  tabContent: cn('flex flex-1 flex-col', 'justify-center space-y-7'),
+  titleCopy: cn('space-y-2'),
+  pageTitle: cn('text-4xl font-semibold tracking-tight'),
+  instructions: cn('text-muted-foreground', 'text-sm leading-6'),
+  loginContent: cn('space-y-6'),
+  separator: cn('relative flex items-center'),
+  separatorRule: cn('flex-1', 'h-px', 'bg-border'),
+  separatorText: cn(
+    'px-3',
+    'text-muted-foreground',
+    'text-xs font-medium uppercase tracking-wider',
+  ),
+  socialButtons: cn('space-y-3'),
+  disclaimer: cn('mt-7', 'text-muted-foreground', 'text-center text-xs leading-5'),
+} as const;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getLoggerService } from '@/services/logger/logger.container';
 
 type CopyLookupCodeStatus = 'copied' | 'error' | null;
@@ -43,5 +43,8 @@ export const useCopyLookupCode = (lookupCode: string | null): UseCopyLookupCodeR
     }
   }, [lookupCode]);
 
-  return { copyLookupCode, status };
+  return useMemo<UseCopyLookupCodeResult>(
+    () => ({ copyLookupCode, status }),
+    [copyLookupCode, status],
+  );
 };

@@ -1,0 +1,24 @@
+@layer components {
+  .main-menu-scroll {
+    direction: rtl;
+    scrollbar-color: var(--foreground) transparent;
+    scrollbar-width: thin;
+
+    & > * {
+      direction: ltr;
+    }
+
+    &::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--foreground);
+      border-radius: 9999px;
+    }
+  }
+}

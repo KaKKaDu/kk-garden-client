@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { authRoutePaths } from '@/features/auth/constants/auth-route.constants';
@@ -9,7 +9,10 @@ import type { AuthGuardProps } from '@/features/auth/types/auth-guard.types';
 export const AuthOnly = ({ children, strict = false }: AuthGuardProps): ReactNode => {
   const router = useRouter();
   const { isAuthenticated, isPending } = useAuth();
-  const shouldRedirect: boolean = strict && !isPending && !isAuthenticated;
+  const shouldRedirect: boolean = useMemo(
+    (): boolean => strict && !isPending && !isAuthenticated,
+    [isAuthenticated, isPending, strict],
+  );
 
   useEffect((): void => {
     if (shouldRedirect) {

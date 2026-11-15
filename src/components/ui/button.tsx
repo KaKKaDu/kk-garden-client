@@ -41,7 +41,10 @@ const buttonVariants = cva(
   },
 );
 
-type ButtonProps = ButtonPrimitive.Props & VariantProps<typeof buttonVariants>;
+type ButtonProps = Omit<ButtonPrimitive.Props, 'className'> &
+  VariantProps<typeof buttonVariants> & {
+    className?: string;
+  };
 
 const Button = ({
   className,
@@ -49,13 +52,13 @@ const Button = ({
   size = 'default',
   ...props
 }: ButtonProps): ReactElement => {
-  const classNameForState = (state: ButtonPrimitive.State): string =>
-    cn(
-      buttonVariants({ variant, size }),
-      typeof className === 'function' ? className(state) : className,
-    );
-
-  return <ButtonPrimitive data-slot="button" className={classNameForState} {...props} />;
+  return (
+    <ButtonPrimitive
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size }), className)}
+      {...props}
+    />
+  );
 };
 
 export { Button, buttonVariants };

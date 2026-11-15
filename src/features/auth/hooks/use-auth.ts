@@ -18,9 +18,15 @@ import type { UseAuthResult } from '../types/use-auth.types';
 export const useAuth = (): UseAuthResult => {
   const authService = getAuthService();
   const authSession = getBetterAuthClient(getApiService()).useSession();
-  const session: UseAuthResult['session'] = authSession.data?.session ?? null;
-  const user: UseAuthResult['user'] = authSession.data?.user ?? null;
-  const isAuthenticated: boolean = session !== null;
+  const session: UseAuthResult['session'] = useMemo(
+    (): UseAuthResult['session'] => authSession.data?.session ?? null,
+    [authSession.data?.session],
+  );
+  const user: UseAuthResult['user'] = useMemo(
+    (): UseAuthResult['user'] => authSession.data?.user ?? null,
+    [authSession.data?.user],
+  );
+  const isAuthenticated: boolean = useMemo((): boolean => session !== null, [session]);
   const isPending: boolean = authSession.isPending;
   const isRefetching: boolean = authSession.isRefetching;
   const error: UseAuthResult['error'] = authSession.error;

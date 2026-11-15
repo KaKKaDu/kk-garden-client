@@ -1,5 +1,10 @@
 import { handleError } from '@kk-garden/shared/errors';
-import type { ThemeColorMap, ThemeColorPalette, ThemePaletteResult } from './theme.types';
+import type {
+  ThemeChartColorMap,
+  ThemeColorMap,
+  ThemeColorPalette,
+  ThemePaletteResult,
+} from './theme.types';
 
 type RgbColor = {
   red: number;
@@ -73,6 +78,30 @@ const toOklch = (lightness: number, chroma: number, hue: number): string =>
 const getTintedNeutral = (accent: AccentColor, lightness: number, chromaFactor: number): string =>
   toOklch(lightness, accent.chroma * chromaFactor, accent.hue);
 
+const createAccentChartPalette = (accent: AccentColor, lightness: number): ThemeChartColorMap => {
+  const chroma: number = Math.max(0.08, Math.min(accent.chroma, 0.16));
+  const colorAtHueOffset = (hueOffset: number): string =>
+    toOklch(lightness, chroma, (accent.hue + hueOffset) % 360);
+  const chart1: string = colorAtHueOffset(0);
+  const chart2: string = colorAtHueOffset(72);
+  const chart3: string = colorAtHueOffset(144);
+  const chart4: string = colorAtHueOffset(216);
+  const chart5: string = colorAtHueOffset(288);
+
+  return {
+    '--chart-1': chart1,
+    '--chart-2': chart2,
+    '--chart-3': chart3,
+    '--chart-4': chart4,
+    '--chart-5': chart5,
+    '--color-chart-1': chart1,
+    '--color-chart-2': chart2,
+    '--color-chart-3': chart3,
+    '--color-chart-4': chart4,
+    '--color-chart-5': chart5,
+  };
+};
+
 const getAccessibleForeground = ({ red, green, blue }: RgbColor): string => {
   const linearRed: number = convertSrgbChannelToLinear(red);
   const linearGreen: number = convertSrgbChannelToLinear(green);
@@ -140,6 +169,7 @@ export const createAccentThemePalette = (accentHex: string): ThemePaletteResult 
       convertOklchToRgb(darkPrimaryColor),
     );
     const light: ThemeColorMap = {
+      ...createAccentChartPalette(accent, 0.62),
       '--background': getTintedNeutral(accent, 0.985, 0.08),
       '--foreground': getTintedNeutral(accent, 0.205, 0.25),
       '--card': getTintedNeutral(accent, 1, 0.04),
@@ -169,6 +199,7 @@ export const createAccentThemePalette = (accentHex: string): ThemePaletteResult 
     };
 
     const dark: ThemeColorMap = {
+      ...createAccentChartPalette(accent, 0.72),
       '--background': getTintedNeutral(accent, 0.145, 0.08),
       '--foreground': getTintedNeutral(accent, 0.985, 0.12),
       '--card': getTintedNeutral(accent, 0.205, 0.08),

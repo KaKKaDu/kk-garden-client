@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { Check, Copy, LogOut, Pencil, UserRound } from 'lucide-react';
 import { CircleButton } from '@/components/ui/circle-button';
@@ -21,6 +21,10 @@ import { useCopyLookupCode } from '@/features/profile/hooks/use-copy-lookup-code
 import { useProfileStore } from '@/features/profile/store/profile.store';
 import { getProfileService } from '@/services/profile/profile.container';
 import type { ProfileResult } from '@/services/profile/profile.types';
+import {
+  getProfileDropdownTriggerClassName,
+  profileDropdownClassNames as classNames,
+} from './profile-dropdown.styles';
 import { headerProfileDropdownTexts as texts } from './texts';
 
 type ProfileDropdownProps = {
@@ -62,7 +66,57 @@ export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps):
     };
   }, [setProfile]);
 
-  const handleSignOut = async (): Promise<void> => {
+  const profileName: string = useMemo(
+    (): string => (profile?.configured === true ? profile.displayName : texts.account),
+    [profile],
+  );
+  const lookupCode: string | null = useMemo(
+    (): string | null => profile?.lookupCode ?? null,
+    [profile?.lookupCode],
+  );
+  const { copyLookupCode, status: lookupCodeCopyStatus } = useCopyLookupCode(lookupCode);
+  const avatarUrl: string | null = useMemo(
+    (): string | null => profile?.avatar?.url ?? null,
+    [profile?.avatar?.url],
+  );
+  const isMobileMenuClosed: boolean = useMemo(
+    (): boolean => isMobile !== false && !isMenuOpen,
+    [isMenuOpen, isMobile],
+  );
+  const triggerClassName: string = useMemo(
+    (): string => getProfileDropdownTriggerClassName(isMenuOpen),
+    [isMenuOpen],
+  );
+  const hasLookupCode: boolean = useMemo((): boolean => lookupCode !== null, [lookupCode]);
+  const isLookupCodeCopied: boolean = useMemo(
+    (): boolean => lookupCodeCopyStatus === 'copied',
+    [lookupCodeCopyStatus],
+  );
+  const alertMessage: string | null = useMemo(
+    (): string | null =>
+      profileError ??
+      logoutError ??
+      (lookupCodeCopyStatus === 'error' ? texts.lookupCodeCopyError : null),
+    [logoutError, lookupCodeCopyStatus, profileError],
+  );
+  const copiedLabel: string = useMemo(
+    (): string => (isLookupCodeCopied ? texts.lookupCodeCopied : texts.copyLookupCode),
+    [isLookupCodeCopied],
+  );
+  const signOutLabel: string = useMemo(
+    (): string => (isSigningOut ? texts.signingOut : texts.logout),
+    [isSigningOut],
+  );
+  const signOutIcon: ReactNode = useMemo(
+    (): ReactNode =>
+      isSigningOut ? (
+        <UserRound aria-hidden="true" className={classNames.icon} />
+      ) : (
+        <LogOut aria-hidden="true" className={classNames.icon} />
+      ),
+    [isSigningOut],
+  );
+  const handleSignOut = useCallback(async (): Promise<void> => {
     setIsSigningOut(true);
     setLogoutError(null);
 
@@ -82,14 +136,7 @@ export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps):
     } finally {
       setIsSigningOut(false);
     }
-  };
-
-  const profileName: string = profile?.configured === true ? profile.displayName : texts.account;
-  const lookupCode: string | null = profile?.lookupCode ?? null;
-  const { copyLookupCode, status: lookupCodeCopyStatus } = useCopyLookupCode(lookupCode);
-  const avatarUrl: string | null = profile?.avatar?.url ?? null;
-  const isMobileMenuClosed: boolean = isMobile !== false && !isMenuOpen;
-  const triggerClassName: string = `aspect-square overflow-hidden transition-[transform,opacity,box-shadow,border-color] duration-200 md:pointer-events-auto md:translate-x-0 md:opacity-100 ${isMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-3 opacity-0 pointer-events-none'}`;
+  }, [setProfile, signOut]);
 
   return (
     <DropdownMenu>
@@ -101,64 +148,50 @@ export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps):
         tabIndex={isMobileMenuClosed ? -1 : 0}
       >
         {avatarUrl ? (
-          <span className="relative block aspect-square size-full overflow-hidden rounded-full">
+          <span className={classNames.avatar}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              alt=""
-              className="absolute inset-0 block h-full w-full object-cover"
-              src={avatarUrl}
-            />
+            <img alt="" className={classNames.avatarImage} src={avatarUrl} />
           </span>
         ) : (
-          <UserRound aria-hidden="true" className="size-8 text-muted-foreground" />
+          <UserRound aria-hidden="true" className={classNames.avatarFallback} />
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="right">
         <DropdownMenuGroup>
           <DropdownMenuLabel>
-            <span className="block font-semibold">{texts.profile}</span>
-            <span className="mt-0.5 block max-w-56 truncate text-xs font-normal text-muted-foreground">
-              {profileName}
-            </span>
+            <span className={classNames.profileName}>{texts.profile}</span>
+            <span className={classNames.profileLabel}>{profileName}</span>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        {profileError || logoutError || lookupCodeCopyStatus === 'error' ? (
-          <p className="px-2.5 py-2 text-xs text-destructive" role="alert">
-            {profileError ??
-              logoutError ??
-              (lookupCodeCopyStatus === 'error' ? texts.lookupCodeCopyError : null)}
+        {alertMessage !== null ? (
+          <p className={classNames.alert} role="alert">
+            {alertMessage}
           </p>
         ) : null}
-        {lookupCode ? (
+        {hasLookupCode ? (
           <DropdownMenuItem
-            aria-label={
-              lookupCodeCopyStatus === 'copied' ? texts.lookupCodeCopied : texts.copyLookupCode
-            }
-            className="justify-between"
+            aria-label={copiedLabel}
+            className={classNames.lookupCodeAction}
             onClick={copyLookupCode}
           >
-            <span className="min-w-0 truncate font-mono text-xs">{lookupCode}</span>
-            {lookupCodeCopyStatus === 'copied' ? (
-              <Check aria-hidden="true" className="size-4" />
+            <span className={classNames.lookupCode}>{lookupCode}</span>
+            {isLookupCodeCopied ? (
+              <Check aria-hidden="true" className={classNames.icon} />
             ) : (
-              <Copy aria-hidden="true" className="size-4" />
+              <Copy aria-hidden="true" className={classNames.icon} />
             )}
           </DropdownMenuItem>
         ) : null}
-        {lookupCode ? <DropdownMenuSeparator /> : null}
+        {hasLookupCode ? <DropdownMenuSeparator /> : null}
         <DropdownMenuItem render={<Link href={profileRoutePaths.edit} />}>
-          <Pencil aria-hidden="true" className="size-4" />
+          <Pencil aria-hidden="true" className={classNames.icon} />
           {texts.editProfile}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled={isSigningOut} onClick={handleSignOut}>
-          {isSigningOut ? (
-            <UserRound aria-hidden="true" className="size-4" />
-          ) : (
-            <LogOut aria-hidden="true" className="size-4" />
-          )}
-          {isSigningOut ? texts.signingOut : texts.logout}
+          {signOutIcon}
+          {signOutLabel}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -1,18 +1,22 @@
 import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 import type { SignInFeedbackProps } from '@/features/auth/types/sign-in.types';
+import { getSignInFeedbackClassName } from './sign-in-feedback.styles';
 
 export const SignInFeedback = ({ feedback }: SignInFeedbackProps): ReactNode => {
+  const isError: boolean = useMemo((): boolean => feedback?.kind === 'error', [feedback?.kind]);
+  const className: string = useMemo((): string => getSignInFeedbackClassName(isError), [isError]);
+  const role: 'alert' | 'status' = useMemo(
+    (): 'alert' | 'status' => (isError ? 'alert' : 'status'),
+    [isError],
+  );
+
   if (feedback === null) {
     return null;
   }
 
-  const isError: boolean = feedback.kind === 'error';
-
   return (
-    <p
-      className={isError ? 'text-sm text-destructive' : 'text-sm text-muted-foreground'}
-      role={isError ? 'alert' : 'status'}
-    >
+    <p className={className} role={role}>
       {feedback.message}
     </p>
   );

@@ -1,13 +1,20 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { HeaderLogoButton } from './HeaderLogoButton/HeaderLogoButton';
 import { ProfileDropdown } from './ProfileDropdown/ProfileDropdown';
+import { getHeaderNavClassName, headerClassNames } from './header.styles';
 import { headerTexts as texts } from './texts';
 
 export const Header = (): ReactNode => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const navClassName: string = useMemo(
+    (): string => getHeaderNavClassName(isMenuOpen),
+    [isMenuOpen],
+  );
+  const handleCloseMenu = useCallback((): void => setIsMenuOpen(false), []);
+  const handleMenuToggle = useCallback((): void => setIsMenuOpen((open) => !open), []);
 
   useEffect((): (() => void) => {
     const mediaQuery: MediaQueryList = window.matchMedia('(max-width: 767px)');
@@ -24,21 +31,15 @@ export const Header = (): ReactNode => {
       {isMenuOpen ? (
         <button
           aria-label={texts.closeMenu}
-          className="fixed inset-0 z-40 bg-foreground/10 transition-opacity motion-reduce:transition-none md:hidden"
-          onClick={(): void => setIsMenuOpen(false)}
+          className={headerClassNames.backdrop}
+          onClick={handleCloseMenu}
           type="button"
         />
       ) : null}
-      <nav
-        aria-label={texts.navigationLabel}
-        className={`main-menu-scroll fixed inset-y-0 left-0 z-50 w-20 overflow-x-hidden overflow-y-auto transition-colors md:bg-transparent ${isMenuOpen ? 'bg-background/95 shadow-lg' : 'bg-transparent'}`}
-      >
-        <div className="flex min-h-full flex-col items-center px-3 py-3">
-          <div className="mt-0 flex flex-col items-center gap-4 md:my-auto">
-            <HeaderLogoButton
-              isMenuOpen={isMenuOpen}
-              onMenuToggle={(): void => setIsMenuOpen((open) => !open)}
-            />
+      <nav aria-label={texts.navigationLabel} className={navClassName}>
+        <div className={headerClassNames.content}>
+          <div className={headerClassNames.menu}>
+            <HeaderLogoButton isMenuOpen={isMenuOpen} onMenuToggle={handleMenuToggle} />
             <ProfileDropdown isMenuOpen={isMenuOpen} isMobile={isMobile} />
           </div>
         </div>

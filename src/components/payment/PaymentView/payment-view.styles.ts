@@ -1,0 +1,38 @@
+import { cn } from '@/utils/class-names.utils';
+
+export const paymentViewClassNames = {
+  main: cn('flex items-center justify-center', 'min-h-[calc(100vh-1rem)] p-4 sm:p-8'),
+  section: cn(
+    'w-full',
+    'max-w-xl p-8 sm:p-10',
+    'border-2 border-primary/20 bg-card text-card-foreground',
+    'rounded-3xl shadow-[8px_8px_0_var(--component-shadow-color)]',
+  ),
+  eyebrow: cn('text-primary', 'text-sm font-medium tracking-wide'),
+  title: cn('mt-2', 'text-3xl font-semibold'),
+  description: cn('mt-3', 'text-muted-foreground'),
+  alert: cn('flex flex-col items-start', 'mt-6 gap-3'),
+  error: cn('text-destructive', 'text-sm'),
+  loading: cn('mt-8', 'text-muted-foreground'),
+  emptyBlock: cn('mt-8 p-5', 'border border-border bg-background', 'rounded-2xl'),
+  emptyTitle: cn('text-lg font-semibold'),
+  emptyDescription: cn('mt-2', 'text-muted-foreground', 'text-sm'),
+  paymentForm: cn('mt-5'),
+  unavailable: cn('mt-2', 'text-muted-foreground', 'text-sm'),
+  pendingBlock: cn('mt-8 p-5', 'border border-border bg-background', 'rounded-2xl'),
+  statusLabel: cn('font-medium'),
+  confirmButton: cn('mt-5'),
+  giftBlock: cn('mt-8 p-5', 'border-2 border-primary/30 bg-primary/5', 'rounded-2xl'),
+  giftContent: cn('flex items-start', 'gap-4'),
+  giftIconFrame: cn(
+    'flex shrink-0 items-center justify-center',
+    'size-11',
+    'border border-primary/30 bg-background text-primary',
+    'rounded-full',
+  ),
+  giftIcon: cn('size-5'),
+  giftBadge: cn('text-primary', 'text-xs font-semibold tracking-wide'),
+  giftTitle: cn('mt-1', 'text-lg font-semibold'),
+  giftDescription: cn('mt-1', 'text-muted-foreground', 'text-sm'),
+  ownerPaidBlock: cn('mt-8 p-5', 'border border-primary/30 bg-primary/5', 'rounded-2xl'),
+} as const;

@@ -1,7 +1,8 @@
 import type { ReactElement } from 'react';
+import { googleIconClassName } from './google-icon.styles';
 
 export const GoogleIcon = (): ReactElement => (
-  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="size-4">
+  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className={googleIconClassName}>
     <path
       fill="#4285F4"
       d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.44a5.5 5.5 0 0 1-2.32 3.51v2.92h3.76c2.2-2.02 3.61-5 3.61-8.67Z"

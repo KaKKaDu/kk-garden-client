@@ -18,11 +18,7 @@ type TabsContentProps = Omit<ComponentProps<typeof TabsPrimitive.Panel>, 'classN
 };
 
 const Tabs = ({ className, ...props }: TabsProps): ReactElement => (
-  <TabsPrimitive.Root
-    data-slot="tabs"
-    className={cn('flex flex-col gap-2', className)}
-    {...props}
-  />
+  <TabsPrimitive.Root data-slot="tabs" className={cn('flex flex-col gap-2', className)} {...props} />
 );
 
 const TabsList = ({ className, ...props }: TabsListProps): ReactElement => (

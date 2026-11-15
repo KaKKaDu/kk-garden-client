@@ -1,0 +1,115 @@
+@layer components {
+  .main-layout-ambient-layer {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .main-layout-ambient-orb {
+    position: absolute;
+    display: block;
+    width: var(--orb-size, 14rem);
+    height: var(--orb-size, 14rem);
+  }
+
+  .main-layout-ambient-orb::before {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-color: color-mix(in oklch, var(--secondary) 72%, var(--primary) 28%);
+    content: '';
+    opacity: 0;
+    animation: ambient-orb-flow 12s ease-in-out infinite;
+  }
+
+  .main-layout-ambient-orb-one {
+    --orb-size: clamp(10rem, 19vw, 21rem);
+
+    top: 8%;
+    left: 16%;
+  }
+
+  .main-layout-ambient-orb-one::before {
+    animation-delay: 0s;
+  }
+
+  .main-layout-ambient-orb-two {
+    --orb-size: clamp(9rem, 16vw, 18rem);
+
+    top: 16%;
+    right: 9%;
+  }
+
+  .main-layout-ambient-orb-two::before {
+    background-color: color-mix(in oklch, var(--accent) 70%, var(--primary) 30%);
+    animation-delay: 0.6s;
+  }
+
+  .main-layout-ambient-orb-three {
+    --orb-size: clamp(8rem, 14vw, 16rem);
+
+    top: 48%;
+    left: 52%;
+  }
+
+  .main-layout-ambient-orb-three::before {
+    animation-delay: 1.2s;
+  }
+
+  .main-layout-ambient-orb-four {
+    --orb-size: clamp(11rem, 18vw, 20rem);
+
+    bottom: 7%;
+    left: 11%;
+  }
+
+  .main-layout-ambient-orb-four::before {
+    background-color: color-mix(in oklch, var(--accent) 70%, var(--secondary) 30%);
+    animation-delay: 1.8s;
+  }
+
+  .main-layout-ambient-orb-five {
+    --orb-size: clamp(9rem, 15vw, 17rem);
+
+    right: 17%;
+    bottom: 13%;
+  }
+
+  .main-layout-ambient-orb-five::before {
+    animation-delay: 2.4s;
+  }
+
+  @keyframes ambient-orb-flow {
+    0%,
+    100% {
+      opacity: 0;
+      transform: translate3d(0, 1rem, 0) scale(0.84);
+    }
+
+    45% {
+      opacity: 0.55;
+      transform: translate3d(0, -0.75rem, 0) scale(1);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .main-layout-ambient-orb-three {
+      top: 42%;
+      left: 42%;
+    }
+
+    .main-layout-ambient-orb-five {
+      right: 5%;
+      bottom: 20%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .main-layout-ambient-orb::before {
+      animation: none;
+      opacity: 0.3;
+    }
+  }
+}

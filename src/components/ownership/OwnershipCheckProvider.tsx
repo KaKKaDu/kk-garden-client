@@ -2,7 +2,7 @@
 
 import { handleError } from '@kk-garden/shared/errors';
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useOwnershipStore } from '@/features/ownership/store/ownership.store';
 import { getLoggerService } from '@/services/logger/logger.container';
@@ -20,7 +20,7 @@ export const OwnershipCheckProvider = ({ children }: OwnershipCheckProviderProps
   const setLoading = useOwnershipStore((state) => state.setLoading);
   const setCheck = useOwnershipStore((state) => state.setCheck);
   const reset = useOwnershipStore((state) => state.reset);
-  const userId: string | null = user?.id ?? null;
+  const userId: string | null = useMemo((): string | null => user?.id ?? null, [user?.id]);
 
   useEffect(() => {
     if (isPending) {

@@ -5,7 +5,7 @@ import {
   ProfileAvatarUploadRequestSchema,
   type ProfileOwnerResponse,
 } from '@kk-garden/shared/schemas';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useProfileStore } from '@/features/profile/store/profile.store';
 import { getLoggerService } from '@/services/logger/logger.container';
 import { getProfileService } from '@/services/profile/profile.container';
@@ -159,14 +159,26 @@ export const useEditProfile = (): UseEditProfileResult => {
     [selectAvatarFile, selectedFile, setProfile],
   );
 
-  return {
-    feedback,
-    hasLoadedProfile,
-    isSubmitting,
-    profileLoadError,
-    profile,
-    previewUrl,
-    saveProfile,
-    selectAvatarFile,
-  };
+  return useMemo<UseEditProfileResult>(
+    () => ({
+      feedback,
+      hasLoadedProfile,
+      isSubmitting,
+      profileLoadError,
+      profile,
+      previewUrl,
+      saveProfile,
+      selectAvatarFile,
+    }),
+    [
+      feedback,
+      hasLoadedProfile,
+      isSubmitting,
+      profileLoadError,
+      profile,
+      previewUrl,
+      saveProfile,
+      selectAvatarFile,
+    ],
+  );
 };

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { AccentThemeProvider } from '@/components/providers/AccentThemeProvider';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { rootLayoutClassNames } from './root-layout.styles';
 import './globals.css';
 
 const defaultAccentHex = '#5CFF7B' as const;
@@ -19,9 +21,11 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="flex flex-col w-full m-0 p-0">
-        <AccentThemeProvider accentHex={defaultAccentHex}>{children}</AccentThemeProvider>
+    <html lang="en" className={rootLayoutClassNames.html}>
+      <body className={rootLayoutClassNames.body}>
+        <AccentThemeProvider accentHex={defaultAccentHex}>
+          <TooltipProvider>{children}</TooltipProvider>
+        </AccentThemeProvider>
       </body>
     </html>
   );

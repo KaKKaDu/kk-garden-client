@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, type ChangeEvent, type ReactNode } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, Copy, Pencil, UserRound } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -14,6 +14,11 @@ import {
 import { useEditProfile } from '@/features/profile/hooks/use-edit-profile/use-edit-profile';
 import { profileEditFormTexts as texts } from '@/features/profile/hooks/use-edit-profile/texts';
 import { useCopyLookupCode } from '@/features/profile/hooks/use-copy-lookup-code/use-copy-lookup-code';
+import {
+  getProfileFeedbackClassName,
+  profileEditFormClassNames as classNames,
+  profileFieldErrorClassName,
+} from './profile-edit-form.styles';
 
 export const ProfileEditForm = (): ReactNode => {
   const {
@@ -36,6 +41,47 @@ export const ProfileEditForm = (): ReactNode => {
     defaultValues: { displayName: '', bio: '' },
   });
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const submitProfile = useMemo(() => handleSubmit(saveProfile), [handleSubmit, saveProfile]);
+  const lookupCode: string | null = useMemo(
+    (): string | null => profile?.lookupCode ?? null,
+    [profile?.lookupCode],
+  );
+  const avatarUrl: string | null = useMemo(
+    (): string | null => previewUrl ?? profile?.avatar?.url ?? null,
+    [previewUrl, profile?.avatar?.url],
+  );
+  const avatarDisplay: ReactNode = useMemo(
+    (): ReactNode =>
+      avatarUrl !== null ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img alt="" className={classNames.avatarImage} src={avatarUrl} />
+      ) : (
+        <UserRound aria-hidden="true" className={classNames.avatarFallback} />
+      ),
+    [avatarUrl],
+  );
+  const hasLookupCode: boolean = useMemo((): boolean => lookupCode !== null, [lookupCode]);
+  const isLoading: boolean = useMemo((): boolean => !hasLoadedProfile, [hasLoadedProfile]);
+  const displayNameError: string | undefined = useMemo(
+    (): string | undefined => errors.displayName?.message,
+    [errors.displayName?.message],
+  );
+  const bioError: string | undefined = useMemo(
+    (): string | undefined => errors.bio?.message,
+    [errors.bio?.message],
+  );
+  const feedbackClassName: string = useMemo(
+    (): string => getProfileFeedbackClassName(feedback?.kind === 'error'),
+    [feedback?.kind],
+  );
+  const feedbackRole: 'alert' | 'status' = useMemo(
+    (): 'alert' | 'status' => (feedback?.kind === 'error' ? 'alert' : 'status'),
+    [feedback?.kind],
+  );
+  const avatarInputKey: 'empty' | 'selected' = useMemo(
+    (): 'empty' | 'selected' => (previewUrl === null ? 'empty' : 'selected'),
+    [previewUrl],
+  );
 
   useEffect(() => {
     if (profile !== null) {
@@ -46,82 +92,72 @@ export const ProfileEditForm = (): ReactNode => {
     }
   }, [profile, reset]);
 
-  const lookupCode: string | null = profile?.lookupCode ?? null;
   const { copyLookupCode, status: lookupCodeCopyStatus } = useCopyLookupCode(lookupCode);
-  const avatarUrl: string | null = previewUrl ?? profile?.avatar?.url ?? null;
-  const isLoading: boolean = !hasLoadedProfile;
+  const isLookupCodeCopied: boolean = useMemo(
+    (): boolean => lookupCodeCopyStatus === 'copied',
+    [lookupCodeCopyStatus],
+  );
+  const hasLookupCodeCopyError: boolean = useMemo(
+    (): boolean => lookupCodeCopyStatus === 'error',
+    [lookupCodeCopyStatus],
+  );
+  const handleAvatarSelection = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): void =>
+      selectAvatarFile(event.currentTarget.files?.[0] ?? null),
+    [selectAvatarFile],
+  );
+  const openAvatarPicker = useCallback((): void => avatarInputRef.current?.click(), []);
 
   return (
-    <section className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-8">
+    <section className={classNames.section}>
       {isLoading ? (
-        <p className="text-sm text-muted-foreground" role="status">
+        <p className={classNames.loading} role="status">
           {texts.loading}
         </p>
       ) : profileLoadError !== null ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className={classNames.error} role="alert">
           {profileLoadError}
         </p>
       ) : (
-        <form
-          className="grid gap-8 sm:grid-cols-[10rem_minmax(0,1fr)]"
-          onSubmit={handleSubmit(saveProfile)}
-        >
-          <div className="flex flex-col items-center gap-3 sm:items-start sm:self-center">
+        <form className={classNames.form} onSubmit={submitProfile}>
+          <div className={classNames.avatarColumn}>
             <input
               accept="image/jpeg,image/png,image/webp"
               aria-label={texts.avatar}
-              className="hidden"
+              className={classNames.hiddenInput}
               disabled={isSubmitting}
               id="profile-avatar"
-              key={previewUrl === null ? 'empty' : 'selected'}
-              onChange={(event): void => selectAvatarFile(event.currentTarget.files?.[0] ?? null)}
+              key={avatarInputKey}
+              onChange={handleAvatarSelection}
               ref={avatarInputRef}
               type="file"
             />
             <Button
               aria-label={texts.changeAvatar}
-              className="group relative aspect-square h-40 w-40 min-h-40 min-w-40 shrink-0 overflow-hidden rounded-full border-primary/40 bg-secondary p-0"
+              className={classNames.avatarButton}
               disabled={isSubmitting}
-              onClick={(): void => avatarInputRef.current?.click()}
+              onClick={openAvatarPicker}
               type="button"
               variant="outline"
             >
-              <span className="relative block aspect-square size-full overflow-hidden rounded-full bg-muted">
-                {avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    alt=""
-                    className="absolute inset-0 block h-full w-full object-cover"
-                    src={avatarUrl}
-                  />
-                ) : (
-                  <UserRound
-                    aria-hidden="true"
-                    className="absolute left-1/2 top-1/2 size-16 -translate-x-1/2 -translate-y-1/2 text-muted-foreground"
-                  />
-                )}
-                <span className="absolute inset-0 grid place-items-center bg-background/75 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                  <Pencil aria-hidden="true" className="size-8" />
+              <span className={classNames.avatarFrame}>
+                {avatarDisplay}
+                <span className={classNames.avatarOverlay}>
+                  <Pencil aria-hidden="true" className={classNames.avatarEditIcon} />
                 </span>
               </span>
             </Button>
-            <p className="text-center text-xs text-muted-foreground sm:text-left">
-              {texts.avatarHint}
-            </p>
-            <div className="w-full rounded-xl border-2 border-primary/20 bg-card p-3 text-card-foreground shadow-[3px_3px_0_var(--component-shadow-color)]">
-              <p className="mb-1 text-xs font-medium text-muted-foreground">{texts.lookupCode}</p>
-              <div className="flex items-center justify-between gap-2">
-                <code className="min-w-0 truncate font-mono text-xs">
+            <p className={classNames.avatarHint}>{texts.avatarHint}</p>
+            <div className={classNames.lookupPanel}>
+              <p className={classNames.lookupLabel}>{texts.lookupCode}</p>
+              <div className={classNames.lookupRow}>
+                <code className={classNames.lookupValue}>
                   {lookupCode ?? texts.lookupCodeUnavailable}
                 </code>
-                {lookupCode ? (
+                {hasLookupCode ? (
                   <Button
-                    aria-label={
-                      lookupCodeCopyStatus === 'copied'
-                        ? texts.lookupCodeCopied
-                        : texts.copyLookupCode
-                    }
-                    className="size-8"
+                    aria-label={isLookupCodeCopied ? texts.lookupCodeCopied : texts.copyLookupCode}
+                    className={classNames.copyButton}
                     onClick={copyLookupCode}
                     size="icon"
                     type="button"
@@ -135,66 +171,66 @@ export const ProfileEditForm = (): ReactNode => {
                   </Button>
                 ) : null}
               </div>
-              {lookupCodeCopyStatus === 'error' ? (
-                <p className="mt-1 text-xs text-destructive" role="alert">
+              {hasLookupCodeCopyError ? (
+                <p className={classNames.errorHint} role="alert">
                   {texts.lookupCodeCopyError}
                 </p>
               ) : null}
             </div>
           </div>
 
-          <div className="min-w-0 space-y-5">
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="profile-display-name">
+          <div className={classNames.fields}>
+            <div className={classNames.field}>
+              <label className={classNames.label} htmlFor="profile-display-name">
                 {texts.displayName}
               </label>
               <Input
-                aria-invalid={errors.displayName !== undefined}
+                aria-invalid={displayNameError !== undefined}
                 autoComplete="name"
                 disabled={isSubmitting}
                 id="profile-display-name"
                 {...register('displayName')}
               />
-              {errors.displayName ? (
-                <p className="text-sm text-destructive" role="alert">
-                  {errors.displayName.message ?? texts.displayNameRequired}
+              {displayNameError !== undefined ? (
+                <p className={profileFieldErrorClassName} role="alert">
+                  {displayNameError ?? texts.displayNameRequired}
                 </p>
               ) : null}
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="profile-bio">
+            <div className={classNames.field}>
+              <label className={classNames.label} htmlFor="profile-bio">
                 {texts.bio}
               </label>
               <Textarea
                 aria-describedby="profile-bio-hint"
-                aria-invalid={errors.bio !== undefined}
+                aria-invalid={bioError !== undefined}
                 disabled={isSubmitting}
                 id="profile-bio"
                 {...register('bio')}
               />
-              <p className="text-xs text-muted-foreground" id="profile-bio-hint">
+              <p className={classNames.help} id="profile-bio-hint">
                 {texts.bioHint}
               </p>
-              {errors.bio ? (
-                <p className="text-sm text-destructive" role="alert">
-                  {errors.bio.message ?? texts.bioInvalid}
+              {bioError !== undefined ? (
+                <p className={profileFieldErrorClassName} role="alert">
+                  {bioError ?? texts.bioInvalid}
                 </p>
               ) : null}
             </div>
 
-            {feedback ? (
-              <p
-                className={
-                  feedback.kind === 'error' ? 'text-sm text-destructive' : 'text-sm text-foreground'
-                }
-                role={feedback.kind === 'error' ? 'alert' : 'status'}
-              >
+            {feedback !== null ? (
+              <p className={feedbackClassName} role={feedbackRole}>
                 {feedback.message}
               </p>
             ) : null}
 
-            <Button className="w-full sm:w-auto" disabled={isSubmitting} size="lg" type="submit">
+            <Button
+              className={classNames.submitButton}
+              disabled={isSubmitting}
+              size="lg"
+              type="submit"
+            >
               {isSubmitting ? texts.saving : texts.save}
             </Button>
           </div>

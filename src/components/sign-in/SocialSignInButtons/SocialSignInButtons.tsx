@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { authRoutePaths } from '@/features/auth/constants/auth-route.constants';
 import { useAuth } from '@/features/auth/hooks/use-auth';
@@ -11,11 +11,27 @@ import { SignInFeedback } from '../SignInFeedback';
 import { socialSignInTexts as texts } from './texts';
 import { GitHubIcon } from './GitHubIcon';
 import { GoogleIcon } from './GoogleIcon';
+import { socialSignInButtonsClassNames as classNames } from './social-sign-in-buttons.styles';
 
 export const SocialSignInButtons = (): ReactNode => {
   const { signInWithSocial } = useAuth();
   const [pendingProvider, setPendingProvider] = useState<SocialAuthProvider | null>(null);
   const [feedback, setFeedback] = useState<SignInFeedbackMessage | null>(null);
+  const isSubmitting: boolean = useMemo((): boolean => pendingProvider !== null, [pendingProvider]);
+  const googleButtonLabel: string = useMemo(
+    (): string =>
+      pendingProvider === 'google'
+        ? texts.connecting(texts.google)
+        : texts.continueWith(texts.google),
+    [pendingProvider],
+  );
+  const gitHubButtonLabel: string = useMemo(
+    (): string =>
+      pendingProvider === 'github'
+        ? texts.connecting(texts.github)
+        : texts.continueWith(texts.github),
+    [pendingProvider],
+  );
 
   const handleSignIn = useCallback(
     async (provider: SocialAuthProvider): Promise<void> => {
@@ -41,33 +57,27 @@ export const SocialSignInButtons = (): ReactNode => {
 
   const handleGoogleSignIn = useCallback((): void => void handleSignIn('google'), [handleSignIn]);
   const handleGitHubSignIn = useCallback((): void => void handleSignIn('github'), [handleSignIn]);
-  const isSubmitting: boolean = pendingProvider !== null;
-
   return (
-    <div className="space-y-3">
+    <div className={classNames.container}>
       <Button
-        className="h-11 w-full"
+        className={classNames.button}
         disabled={isSubmitting}
         onClick={handleGoogleSignIn}
         type="button"
         variant="outline"
       >
         <GoogleIcon />
-        {pendingProvider === 'google'
-          ? texts.connecting(texts.google)
-          : texts.continueWith(texts.google)}
+        {googleButtonLabel}
       </Button>
       <Button
-        className="h-11 w-full"
+        className={classNames.button}
         disabled={isSubmitting}
         onClick={handleGitHubSignIn}
         type="button"
         variant="outline"
       >
         <GitHubIcon />
-        {pendingProvider === 'github'
-          ? texts.connecting(texts.github)
-          : texts.continueWith(texts.github)}
+        {gitHubButtonLabel}
       </Button>
       <SignInFeedback feedback={feedback} />
     </div>

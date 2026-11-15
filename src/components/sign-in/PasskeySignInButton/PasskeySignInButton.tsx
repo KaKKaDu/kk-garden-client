@@ -1,18 +1,23 @@
 'use client';
 
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { getAuthOperationErrorMessage } from '@/features/auth/utils/auth-result.utils';
 import type { SignInFeedbackMessage } from '@/features/auth/types/sign-in.types';
 import { SignInFeedback } from '../SignInFeedback';
+import { passkeySignInButtonClassNames as classNames } from './passkey-sign-in-button.styles';
 import { passkeySignInTexts as texts } from './texts';
 
 export const PasskeySignInButton = (): ReactNode => {
   const { signInWithPasskey } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<SignInFeedbackMessage | null>(null);
+  const buttonLabel: string = useMemo(
+    (): string => (isSubmitting ? texts.pending : texts.label),
+    [isSubmitting],
+  );
 
   const handleSignIn = useCallback(async (): Promise<void> => {
     setIsSubmitting(true);
@@ -29,16 +34,16 @@ export const PasskeySignInButton = (): ReactNode => {
   }, [signInWithPasskey]);
 
   return (
-    <div className="space-y-3">
+    <div className={classNames.container}>
       <Button
-        className="h-11 w-full"
+        className={classNames.button}
         disabled={isSubmitting}
         onClick={handleSignIn}
         type="button"
         variant="outline"
       >
         <KeyRound aria-hidden="true" />
-        {isSubmitting ? texts.pending : texts.label}
+        {buttonLabel}
       </Button>
       <SignInFeedback feedback={feedback} />
     </div>
