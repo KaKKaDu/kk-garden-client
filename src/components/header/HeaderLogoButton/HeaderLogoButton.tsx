@@ -3,13 +3,16 @@
 import Link from 'next/link';
 import { useMemo, type ReactNode } from 'react';
 import { CircleButton } from '@/components/ui/circle-button';
+import { headerClassNames } from '../header.styles';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ProjectStyleMenuIcon } from '../ProjectStyleMenuIcon/ProjectStyleMenuIcon';
 import { authRoutePaths } from '@/features/auth/constants/auth-route.constants';
 import { headerLogoButtonClassNames as classNames } from './header-logo-button.styles';
 import { headerLogoButtonTexts as texts } from './texts';
+import { cn } from '@/utils/class-names.utils';
 
 type HeaderLogoButtonProps = {
+  isActive: boolean;
   isMenuOpen: boolean;
   onMenuToggle: () => void;
 };
@@ -17,6 +20,7 @@ type HeaderLogoButtonProps = {
 const LogoImage = (): ReactNode => <ProjectStyleMenuIcon className={classNames.logo} name="logo" />;
 
 export const HeaderLogoButton = ({
+  isActive,
   isMenuOpen,
   onMenuToggle,
 }: HeaderLogoButtonProps): ReactNode => {
@@ -49,8 +53,12 @@ export const HeaderLogoButton = ({
         <TooltipTrigger
           render={
             <CircleButton
+              aria-current={isActive ? 'page' : undefined}
               aria-label={texts.home}
-              className={classNames.desktop}
+              className={cn(
+                classNames.desktop,
+                isActive ? headerClassNames.activeMenuItem : undefined,
+              )}
               nativeButton={false}
               render={<Link href={authRoutePaths.main} />}
             />

@@ -49,6 +49,14 @@
 
   --color-accent: var(--accent);
 
+  --color-sharing-approved: var(--sharing-approved);
+
+  --color-sharing-pending: var(--sharing-pending);
+
+  --color-sharing-incoming: var(--sharing-incoming);
+
+  --color-sharing-outgoing: var(--sharing-outgoing);
+
   --color-muted-foreground: var(--muted-foreground);
 
   --color-muted: var(--muted);
@@ -91,6 +99,14 @@
 :root {
   --radius: 0.625rem;
   --component-shadow-color: color-mix(in oklch, var(--foreground) 24%, transparent);
+  --component-shadow-moderate: 3px 3px 0 var(--component-shadow-color);
+  --component-shadow-large: 8px 8px 0 var(--component-shadow-color);
+  --component-shadow-hover: 5px 5px 0 var(--component-shadow-color);
+  --component-shadow-pressed: 1px 1px 0 var(--component-shadow-color);
+  --sharing-approved: var(--primary);
+  --sharing-pending: color-mix(in oklch, var(--primary) 50%, var(--accent) 50%);
+  --sharing-incoming: color-mix(in oklch, var(--primary) 50%, var(--secondary) 50%);
+  --sharing-outgoing: var(--primary);
   --svg-base: #7dbe5e;
   --svg-deep: #2e6b34;
   --svg-dark: #4c9a4a;

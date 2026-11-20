@@ -1,0 +1,28 @@
+import type { StaticTexts } from '@/types/static-texts.types';
+
+export const sharingListsTexts = {
+  accessibleTitle: 'Gardens you can access',
+  viewersTitle: 'My viewers',
+  pendingRequests: 'Pending requests',
+  pendingApplications: 'Pending applications',
+  accessibleGardens: 'Shared gardens',
+  currentViewers: 'Current viewers',
+  noPendingRequests: 'You have no outgoing requests waiting for approval.',
+  noPendingApplications: 'There are no pending applications for your garden.',
+  noAccessibleGardens: 'Gardens shared with you will appear here.',
+  noViewers: 'People with access to your garden will appear here.',
+  reload: 'Reload',
+  reloading: 'Reloading',
+  loading: 'Loading sharing lists...',
+  loadMoreRequests: 'Load more pending requests',
+  loadMoreGrants: 'Load more shared gardens',
+  loadError: 'Could not load garden sharing lists.',
+  actionError: 'Could not update garden access.',
+  pending: 'Pending',
+  accessGranted: 'Access granted',
+  cancelRequest: 'Cancel access request',
+  reject: 'Reject access application',
+  accept: 'Accept access application',
+  revokeAccess: 'Revoke garden access',
+  viewGarden: 'View garden',
+} satisfies StaticTexts;

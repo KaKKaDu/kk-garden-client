@@ -9,6 +9,7 @@ export const headerClassNames = {
   nav: cn('fixed inset-y-0 left-0 z-50 w-20 overflow-x-hidden overflow-y-auto', 'main-menu-scroll'),
   content: cn('flex flex-col items-center', 'min-h-full px-3 py-3'),
   menu: cn('flex flex-col items-center', 'mt-0 gap-4', 'md:my-auto'),
+  activeMenuItem: cn('border-primary bg-primary/20 ring-2 ring-primary/30'),
 } as const;
 
 export const getHeaderNavClassName = (isMenuOpen: boolean): string =>

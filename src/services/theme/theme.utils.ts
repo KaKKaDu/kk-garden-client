@@ -88,15 +88,21 @@ const toOklch = (lightness: number, chroma: number, hue: number): string =>
 const getTintedNeutral = (accent: AccentColor, lightness: number, chromaFactor: number): string =>
   toOklch(lightness, accent.chroma * chromaFactor, accent.hue);
 
-const createAccentChartPalette = (accent: AccentColor, lightness: number): ThemeChartColorMap => {
+const getAccentPaletteColor = (
+  accent: AccentColor,
+  lightness: number,
+  hueOffset: number,
+): string => {
   const chroma: number = Math.max(0.08, Math.min(accent.chroma, 0.16));
-  const colorAtHueOffset = (hueOffset: number): string =>
-    toOklch(lightness, chroma, (accent.hue + hueOffset) % 360);
-  const chart1: string = colorAtHueOffset(0);
-  const chart2: string = colorAtHueOffset(72);
-  const chart3: string = colorAtHueOffset(144);
-  const chart4: string = colorAtHueOffset(216);
-  const chart5: string = colorAtHueOffset(288);
+  return toOklch(lightness, chroma, (accent.hue + hueOffset) % 360);
+};
+
+const createAccentChartPalette = (accent: AccentColor, lightness: number): ThemeChartColorMap => {
+  const chart1: string = getAccentPaletteColor(accent, lightness, 0);
+  const chart2: string = getAccentPaletteColor(accent, lightness, 72);
+  const chart3: string = getAccentPaletteColor(accent, lightness, 144);
+  const chart4: string = getAccentPaletteColor(accent, lightness, 216);
+  const chart5: string = getAccentPaletteColor(accent, lightness, 288);
 
   return {
     '--chart-1': chart1,
@@ -111,6 +117,19 @@ const createAccentChartPalette = (accent: AccentColor, lightness: number): Theme
     '--color-chart-5': chart5,
   };
 };
+
+const createAccentSharingPalette = (
+  accent: AccentColor,
+  lightness: number,
+): Pick<
+  ThemeColorMap,
+  '--sharing-approved' | '--sharing-pending' | '--sharing-incoming' | '--sharing-outgoing'
+> => ({
+  '--sharing-approved': getAccentPaletteColor(accent, lightness, 0),
+  '--sharing-pending': getAccentPaletteColor(accent, lightness, 120),
+  '--sharing-incoming': getAccentPaletteColor(accent, lightness, 240),
+  '--sharing-outgoing': getAccentPaletteColor(accent, lightness, 0),
+});
 
 const getAccessibleForeground = ({ red, green, blue }: RgbColor): string => {
   const linearRed: number = convertSrgbChannelToLinear(red);
@@ -220,6 +239,7 @@ export const createAccentThemePalette = (accentHex: string): ThemePaletteResult 
       '--muted-foreground': getTintedNeutral(accent, 0.5, 0.15),
       '--accent': getTintedNeutral(accent, 0.94, 0.18),
       '--accent-foreground': getTintedNeutral(accent, 0.205, 0.25),
+      ...createAccentSharingPalette(accent, 0.48),
       '--destructive': 'oklch(0.577 0.245 27.325)',
       '--border': getTintedNeutral(accent, 0.922, 0.12),
       '--input': getTintedNeutral(accent, 0.922, 0.12),
@@ -251,6 +271,7 @@ export const createAccentThemePalette = (accentHex: string): ThemePaletteResult 
       '--muted-foreground': getTintedNeutral(accent, 0.708, 0.15),
       '--accent': getTintedNeutral(accent, 0.269, 0.18),
       '--accent-foreground': getTintedNeutral(accent, 0.985, 0.12),
+      ...createAccentSharingPalette(accent, 0.76),
       '--destructive': 'oklch(0.704 0.191 22.216)',
       '--border': 'oklch(1 0 0 / 10%)',
       '--input': 'oklch(1 0 0 / 15%)',

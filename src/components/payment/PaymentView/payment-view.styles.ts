@@ -6,7 +6,7 @@ export const paymentViewClassNames = {
     'w-full',
     'max-w-xl p-8 sm:p-10',
     'border-2 border-primary/20 bg-card text-card-foreground',
-    'rounded-3xl shadow-[8px_8px_0_var(--component-shadow-color)]',
+    'rounded-3xl shadow-[var(--component-shadow-large)]',
   ),
   eyebrow: cn('text-primary', 'text-sm font-medium tracking-wide'),
   title: cn('mt-2', 'text-3xl font-semibold'),

@@ -13,7 +13,7 @@ const CircleButton = ({
 }: CircleButtonProps): ReactElement => {
   const classNameForState = (state: ButtonPrimitive.State): string =>
     cn(
-      'inline-grid shrink-0 cursor-pointer place-items-center rounded-full border-2 border-primary/40 bg-secondary shadow-[3px_3px_0_var(--component-shadow-color)] outline-none transition-[transform,box-shadow,border-color] duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-foreground hover:shadow-[5px_5px_0_var(--component-shadow-color)] focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0_var(--component-shadow-color)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none',
+      'inline-grid shrink-0 cursor-pointer place-items-center rounded-full border-2 border-primary/40 bg-secondary shadow-[var(--component-shadow-moderate)] outline-none transition-[transform,box-shadow,border-color] duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-foreground hover:shadow-[var(--component-shadow-hover)] focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-x-[2px] active:translate-y-[2px] active:shadow-[var(--component-shadow-pressed)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none',
       circleSize === 'large' ? 'size-16' : 'size-14',
       typeof className === 'function' ? className(state) : className,
     );

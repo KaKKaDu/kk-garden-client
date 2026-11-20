@@ -31,11 +31,16 @@ import {
 import { headerProfileDropdownTexts as texts } from './texts';
 
 type ProfileDropdownProps = {
+  isActive: boolean;
   isMenuOpen: boolean;
   isMobile: boolean | null;
 };
 
-export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps): ReactNode => {
+export const ProfileDropdown = ({
+  isActive,
+  isMenuOpen,
+  isMobile,
+}: ProfileDropdownProps): ReactNode => {
   const { signOut } = useAuth();
   const profile = useProfileStore((state) => state.profile);
   const setProfile = useProfileStore((state) => state.setProfile);
@@ -87,8 +92,8 @@ export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps):
     [isMenuOpen, isMobile],
   );
   const triggerClassName: string = useMemo(
-    (): string => getProfileDropdownTriggerClassName(isMenuOpen),
-    [isMenuOpen],
+    (): string => getProfileDropdownTriggerClassName(isMenuOpen, isActive),
+    [isActive, isMenuOpen],
   );
   const hasLookupCode: boolean = useMemo((): boolean => lookupCode !== null, [lookupCode]);
   const isLookupCodeCopied: boolean = useMemo(
@@ -199,7 +204,10 @@ export const ProfileDropdown = ({ isMenuOpen, isMobile }: ProfileDropdownProps):
           </DropdownMenuItem>
         ) : null}
         {hasLookupCode ? <DropdownMenuSeparator /> : null}
-        <DropdownMenuItem render={<Link href={profileRoutePaths.edit} />}>
+        <DropdownMenuItem
+          aria-current={isActive ? 'page' : undefined}
+          render={<Link href={profileRoutePaths.edit} />}
+        >
           <Pencil aria-hidden="true" className={classNames.icon} />
           {texts.editProfile}
         </DropdownMenuItem>

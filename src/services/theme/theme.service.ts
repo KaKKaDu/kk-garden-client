@@ -125,7 +125,11 @@ export class ThemeService {
 
     svgElements.forEach((element: HTMLIFrameElement): void => {
       const embeddedDocument: Document | null = element.contentDocument;
-      if (embeddedDocument !== null) {
+      if (
+        embeddedDocument !== null &&
+        embeddedDocument.readyState === 'complete' &&
+        embeddedDocument.documentElement.localName === 'svg'
+      ) {
         this.styleEmbeddedSvg(embeddedDocument, colors);
       }
     });

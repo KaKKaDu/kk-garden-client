@@ -6,7 +6,7 @@ export const signInViewClassNames = {
     'grid',
     'w-full max-w-5xl',
     'border-2 bg-card',
-    'overflow-hidden rounded-3xl shadow-[8px_8px_0_var(--component-shadow-color)] lg:min-h-[42rem] lg:grid-cols-[0.95fr_1.05fr]',
+    'overflow-hidden rounded-3xl shadow-[var(--component-shadow-large)] lg:min-h-[42rem] lg:grid-cols-[0.95fr_1.05fr]',
   ),
   aside: cn(
     'flex flex-col justify-between',

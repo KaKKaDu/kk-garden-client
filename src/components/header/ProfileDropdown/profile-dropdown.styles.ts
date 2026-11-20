@@ -1,4 +1,5 @@
 import { cn } from '@/utils/class-names.utils';
+import { headerClassNames } from '../header.styles';
 
 export const profileDropdownClassNames = {
   profileIcon: cn('size-8'),
@@ -35,8 +36,12 @@ export const profileDropdownClassNames = {
   ),
 } as const;
 
-export const getProfileDropdownTriggerClassName = (isMenuOpen: boolean): string =>
+export const getProfileDropdownTriggerClassName = (
+  isMenuOpen: boolean,
+  isActive: boolean,
+): string =>
   cn(
     profileDropdownClassNames.trigger,
     isMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-3 pointer-events-none opacity-0',
+    isActive ? headerClassNames.activeMenuItem : undefined,
   );

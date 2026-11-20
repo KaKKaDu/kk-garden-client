@@ -5,7 +5,7 @@ export const ownershipAccountBlockClassNames = {
     'w-full',
     'max-w-xl p-8 sm:p-10',
     'border-2 border-primary/20 bg-card text-card-foreground',
-    'rounded-3xl text-center shadow-[8px_8px_0_var(--component-shadow-color)]',
+    'rounded-3xl text-center shadow-[var(--component-shadow-large)]',
   ),
   title: cn('text-2xl font-semibold'),
   description: cn('mt-3', 'text-muted-foreground'),
